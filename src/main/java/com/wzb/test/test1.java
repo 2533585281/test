@@ -1,7 +1,11 @@
 package com.wzb.test;
 
 public class test1 {
-
+    /**
+     * 获取一个数组中两值相加等于某一个数，
+     *      输出两值的下标
+     * @param args
+     */
     public static void main(String[] args) {
         Integer[] nums={4,2,3,5};
         int target=9;

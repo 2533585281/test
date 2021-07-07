@@ -1,7 +1,8 @@
 package com.wzb.test;
 
-import java.util.ArrayList;
-import java.util.List;
+/**
+ * 获取一个数组中，最大值减最小值的差值
+ */
 
 public class test2 {
     public static void main(String[] args) {

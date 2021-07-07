@@ -3,6 +3,10 @@ package com.wzb.test;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 输出两个数组中相同的元素
+ */
+
 public class test3 {
 
     public static void main(String[] args) {
