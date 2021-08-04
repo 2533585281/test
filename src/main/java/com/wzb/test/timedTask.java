@@ -19,7 +19,7 @@ public class timedTask {
      */
 
     // 添加定时任务
-    @Scheduled(cron = "0/5 * * * * ?") // cron 表达式，每五秒执行一次
+  //  @Scheduled(cron = "0/5 * * * * ?") // cron 表达式，每五秒执行一次
     public  void doTask(){
         System.out.println("我是定时任务~");
     }

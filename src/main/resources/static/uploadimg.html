@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form method="post" class="addFormSingle" action="admin_category_add" enctype="multipart/form-data">
+    <table class="addTable">
+        <tr>
+            <td>请选择本地图片 尺寸400X400 为佳</td>
+        </tr>
+        <tr>
+            <td>
+                <input id="imageSingle" type="file" name="image" onchange="f()" />
+            </td>
+        </tr>
+        <tr class="submitTR">
+            <td align="center">
+                <input type="hidden" name="imageId"  id="imageId"  />
+                <button type="submit">提 交</button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+    function f() {
+        var file=document.getElementById('imageSingle').value;
+        console.log(file);
+        //去头去尾
+        var val=file.substr(12,file.length-16)
+        console.log(val)
+        document.getElementById('imageId').value=val;
+    }
+</script>
+
+
+</body>
+</html>
