@@ -12,11 +12,15 @@ import javax.servlet.http.HttpSession;
 
 import com.wzb.entity.UploadedImageFile;
 import com.wzb.util.ImageUtil;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+
+@CrossOrigin//可以加在类上，也可以加到方法上
 @Controller
 public class ImageController {
     @RequestMapping("admin_category_add")
@@ -38,6 +42,22 @@ public class ImageController {
         BufferedImage img = ImageUtil.change2jpg(file);
         //将图片写入文件所在位置
         ImageIO.write(img, "jpg", file);
+        return "上传成功";
+    }
+
+    @RequestMapping("uploadFile")
+    @ResponseBody
+    public String uploadFile(String fileId, HttpSession session, File file) throws IOException {
+        // File  imageFolder= new File(session.getServletContext().getRealPath("img/imgFile"));
+        String imageFolder=new String("E:\\img");
+        fileId+=System.currentTimeMillis();
+        File f = new File(imageFolder, fileId);
+        try {
+            FileUtils.copyFile(file, f);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "false";
+        }
         return "上传成功";
     }
 }
