@@ -1,4 +1,4 @@
-package com.wzb.test;
+package com.wzb.douyin;
 
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -90,13 +90,21 @@ public class CrawlerDouYin {
 
         }
         System.out.println("视频集合------------"+douYinVideos);
-        System.out.println("视频共有"+douYinVideos.size());
+        System.out.println("视频共有"+douYinVideos.size()+"页");
 
-
-        /*PicDownload picDownload = new PicDownload();
-        InputStream stream=null;
-        File file = picDownload.convertFileByUrl(douYinVideo.getPlay_addr(), douYinVideo.getDesc());
-        System.out.println(file.getName());*/
+        System.out.println("开始下载--------------------");
+        for(int i=0;i<douYinVideos.size();i++){
+            System.out.println("正在下载第"+(i+1)+"页视频");
+            Map<String,String> m=(Map)douYinVideos.get(i);
+            m.forEach((key, value) -> {
+                try {
+                    IoUtil.download(value,"E://douyinvid/"+key+".mp4");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+        System.out.println("下载完成");
 
     }
 
