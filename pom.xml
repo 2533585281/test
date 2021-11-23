@@ -98,6 +98,26 @@
             <version>1.2.73</version>
         </dependency>
 
+        <!--tar 文件下载依赖-->
+        <!-- https://mvnrepository.com/artifact/org.apache.ant/ant -->
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.10.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.ethz</groupId>
+            <artifactId>ssh2</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!-- redis依赖包 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
 
     </dependencies>
 
