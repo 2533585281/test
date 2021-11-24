@@ -1,0 +1,114 @@
+输入流  输出流 下载上传
+
+
+    /**
+     * 下载参数模板
+     * window.location = 'paramTemplate/downloadFile.do?' + Ext.Object.toQueryString(params);  window发送请求，获取window信息
+     * @param network
+     * @param templateName
+     * @param fileName
+     * @param response
+     */
+    public void downloadFile(String network, String templateName, String fileName, HttpServletResponse response, HttpServletRequest request) throws IOException {
+    	// 获取下载文件
+        String path4 = System.getProperty("user.dir");                       // 找到系统根目录
+        String zipPaths = new File(path4).getParent() + "/webapps/upload/Param/";      // 找到文件目录
+        String downPath = zipPaths + fileName + ".csv";                      // 找到文件  fileName 为页面传来的文件名
+        try {
+            String path = downPath;   
+            File file = new File(path);
+            //设置响应头，控制浏览器下载该文件
+            response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(fileName + ".csv", "UTF-8"));
+            //读取要下载的文件，保存到文件输入流
+            FileInputStream in;
+            in = new FileInputStream(path);
+            OutputStream out = response.getOutputStream();
+            //缓存区
+            byte buffer[] = new byte[1024];
+            int len = 0;
+            //循环将输入流中的内容读取到缓冲区中
+            while ((len = in.read(buffer)) > 0) {
+                out.write(buffer, 0, len);
+            }
+            //关闭
+            out.flush();
+            in.close();
+            out.close();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+
+
+      /**
+     * 定时查询 保存文件
+     * @throws IOException
+     */
+    public void cornQuery() throws IOException {
+        System.out.println("定时任务。。。");
+        List list = dao.cornQuery();
+        System.out.println(list);
+
+        if (!list.isEmpty()){
+        	// 找到文件根目录
+            String path4=System.getProperty("user.dir");
+            // 新建文件夹
+            String zipPaths = new File(path4).getParent() + "/webapps/upload/Param";
+            System.out.println(zipPaths);
+            //创建文件夹
+            File folder = new File(zipPaths);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+            folder.createNewFile();  // 创建一个新的文件
+
+            for (Object obj : list) {  // 循环list   
+                Map<String, String> map = (Map<String, String>) obj; // 将list里面的单个对象，转成map
+                String filename=map.get("network")+map.get("templateName")+map.get("startTime");  // 每个map拼一个文件名
+                String zipPath = zipPaths +"\\"+filename+ ".csv";  //  加上路径和后缀  .csv  这个文件类型类似excel
+                File file = new File(zipPath);  //  创建一个新文件 
+                String[] ls ={"PRODUCT","RELATED_ENB_ID","CEL_ID","北向值1","北向值2","建议值"};  //  文件标题
+
+                List paramlist=service.queryparam(map.get("templateName"),map.get("network"));  //   查询，获取要写入的数据，
+
+                FileOutputStream fos = new FileOutputStream(file);   //   Out文件流
+                fos.write(new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF});
+                OutputStreamWriter ow = new OutputStreamWriter(fos, "UTF-8");// 编码集  utf-8
+
+                List<String> titleList = Arrays.asList(ls); // 数组转集合
+                int t = 0;                                  // 0为标题，先写入标题
+                for (String title : titleList) {            
+                    if (t == 0) {
+                        ow.write(ls[t]);
+                    } else {
+                        ow.write(title);
+                    }
+                    ow.write(",");
+                    t++;
+                }
+                //写完文件头后换行
+                ow.write("\r\n");
+                if (!paramlist.isEmpty()){                // 判断查询数据不为空，
+                    //写内容
+                    for (int i = 0, size = paramlist.size(); i < size; i++) {
+                        Map<String, String> o = (Map<String, String>) paramlist.get(i);
+                        for (String keys : titleList) {  //  根据标题循环数据
+                            Object objs = o.get(keys);
+                            String strs = String.valueOf(objs);
+                            ow.write(strs);
+                            ow.write(",");
+                            continue;
+                        }
+                        //写完一行换行
+                        ow.write("\r\n");
+                    }
+                }
+                ow.flush();                             // 输出流刷新
+                ow.close();                             // 输出流关闭
+                int sum=dao.addfileName(map.get("network"),map.get("templateName"),map.get("startTime"),map.get("loopexe"),filename);
+                System.out.println(filename + ".csv 文件写入完成");
+            }
+        }
+    }

@@ -1,0 +1,343 @@
+EXT相关
+
+
+Ext.require([
+    'Ext.*'
+]);
+
+
+Ext.onReady(function(){
+    Ext.QuickTips.init();
+    Ext.Ajax.timeout = 1000*60*10; //ajax设置10分钟超时
+
+    /*加载动画*/
+    var loadMask = new Ext.LoadMask(document.body, {
+        msg: '正在处理数据，请稍候......',
+        removeMask: true // 完成后移除
+    });
+    var pageSize = 50;
+    
+
+	//-------------查询条件----------------
+    var AppForm = Ext.create('Ext.form.Panel', {
+        id:'AppForm_id',
+        defaults:{labelWidth: 60,width:220,labelAlign:'right',xtype : "textfield",border:false,margin: 10},
+        border:false,
+        xtype:'form',
+        layout:'column',
+        items:[{
+            xtype: 'datefield',
+            id: 'startDate',
+            name: 'startDate',
+            fieldLabel: '时间',
+            labelWidth: 90,
+            width: 280,
+            format: 'Y-m-d',
+            editable: false,
+            value: Ext.Date.add(new Date(), -1),
+        },{
+            xtype: 'datefield',
+            id: 'endDate',
+            name: 'endDate',
+            fieldLabel: '结束时间',
+            labelWidth: 90,
+            width: 280,
+            format: 'Y-m-d',
+            editable: false,
+            value: Ext.Date.add(new Date(), +1),
+        },{
+            xtype:'combo',
+            fieldLabel:"区局",
+            id:"region",
+            name: "region",
+            allowBlank: false,
+            editable : false,
+            emptyText: '区局',
+            blankText: '区局',
+            store: Ext.create('Ext.data.Store', {
+                fields: ['id','name'],
+                data: [
+                    {'id':'PD','name':'浦东'},
+                    {'id':'BS','name':'宝山'}]
+            }),
+            queryMode: 'local',
+            displayField: 'name',
+            valueField: 'id',
+        },{
+            xtype:'combo',
+            fieldLabel:"参数级别",
+            id: "direction",
+            name: "direction",
+            editable : false,
+            allowBlank: false,
+            emptyText: '参数级别',
+            blankText: '参数级别',
+            store: Ext.create('Ext.data.Store', {
+                fields: ['name'],
+                data: [
+                    {'name':'基站级'}
+                ]
+            }),
+            queryMode: 'local',
+            displayField: 'name',
+            valueField: 'name',
+/*            listeners: {
+                change: function (that, value) {
+                    var data = [{'name':'PLMN'},{'name':'PCI'},{'name':'TAC'},{'name':'频点号'}];
+                    if (value === '5G') {
+                        data.push({'name':'部署方式'});
+                    }
+                    Ext.getCmp('hc').getStore().loadData(data);
+                }
+            },*/
+        },{
+            xtype:'combo',
+            fieldLabel:"参数名称",
+            id:"hc",
+            name: "hc",
+            allowBlank: false,
+            editable : false,
+            emptyText: '参数名称',
+            multiSelect: true,
+            blankText: '参数名称',
+            store: Ext.create('Ext.data.Store', {
+                fields: ['name'],
+                data: [{'name': '参数名称'}]
+            }),
+            queryMode: 'local',
+            displayField: 'name',
+            valueField: 'name'
+        },{
+            xtype:'button',
+            width:80,
+            border:false,
+            text:'查&nbsp;&nbsp;&nbsp;询',
+            icon:"image/search.png",
+            handler:function(){
+                var form = AppForm.getForm();
+                if (!form.isValid()) {
+                    return;
+                }
+                form.submit({
+                    url: 'wzb/query2.do',
+                    waitTitle : '提示',
+                    waitMsg : '数据在处理中,请稍后......',
+                    success: function(form, action) {
+                        if(action.result.data){
+                            store.setProxy(new Ext.ux.data.PagingMemoryProxy({
+                                data: action.result.data,
+                                reader: {
+                                    type: 'json'
+                                }
+                            }));
+                            store.loadPage(1);
+                        }
+                    },
+                    failure: function(form, action) {
+                        Ext.Msg.alert('提示', '请求失败');
+                    }
+                });
+            }
+        },{
+            xtype:'button',
+            width:80,
+            border:false,
+            text:'导&nbsp;&nbsp;&nbsp;出',
+            icon:"image/excel.png",
+            handler:function(){
+                if(store.getCount() > 0){
+                    var title = [], key = [];
+                    for ( var i in grid.columns) {
+                        if(i > 0){
+                            if(!grid.columns[i].hidden){
+                                title.push(grid.columns[i].text);
+                                key.push(grid.columns[i].dataIndex);
+                            }
+                        }
+                    }
+                    var params = {
+                        titles: title,
+                        keys: key,
+                    };
+                    var src = 'wzb/export.do?'+Ext.Object.toQueryString(params);
+                    window.location = src;
+                } else {
+                    Ext.Msg.alert("提示", "请先查询数据！");
+                }
+            }
+        }]
+    });
+
+
+
+        //分页设定
+    var pagesize_combox = new Ext.form.ComboBox({
+        store: [['5', 5], ['10', 10], ['20', 20], ['30', 30],
+            ['40', 40], ['50', 50], ['60', 60], ['70', 70],
+            ['80', 80], ['90', 90], ['100', 100]],
+        width: 50,
+        readOnly: false,
+        editable: false,
+        mode: 'remote',
+        triggerAction: 'all',
+        valueField: 'value',
+        displayField: 'text',
+        value: pageSize
+    });
+
+    //分页监听
+    pagesize_combox.on("select", function (comboBox) {
+        var devicebbar = Ext.getCmp('dock');
+        var number = parseInt(comboBox.getValue());
+        devicebbar.pageSize = number;
+        store.pageSize = number;
+        Ext.apply(store.proxy.extraParams, {
+            limit: number
+        });
+        store.loadPage(1);
+    });
+
+
+
+
+    var store = Ext.create('Ext.data.Store', {
+        pageSize: pageSize,
+        fields: ['区局', '参数级别', '参数名称','参数变化数量'],
+        data: [ ]
+    });
+
+        var grid = Ext.create('Ext.grid.Panel', {
+        id: 'gridPanel',
+        frame: false,   //true时可以为panel添加背景色、圆角边框
+        // forceFit: true,  //自动调整  不会出现滚动条
+        stripeRows:true,   //斑马线效果
+        loadMask:true,     //加载时遮罩
+        autoScroll:true,   //滚动条
+        store: store,     
+        columns: [ {
+            xtype: 'rownumberer',
+            header: '序号',
+            align: 'center',
+            width: 60
+        }, {
+            header : '区局',
+            dataIndex : '区局',
+            align : 'center',
+            width: 250
+        }, {
+            header : '参数级别',
+            dataIndex : '参数级别',
+            align : 'center',
+            width: 250
+        }, {
+            header : '参数名称',
+            dataIndex : '参数名称',
+            align : 'center',
+            width: 900
+        }, {
+            header : '参数变化数量',
+            dataIndex : '参数变化数量',
+            align : 'center',
+            width: 150,
+            listeners:{
+/*                click: function (value) {
+                    console.log(value);
+                }*/
+                click: function (grid,e) {
+                    var data = e.textContent;
+                    console.log(data);
+                }
+            }
+        }  ],
+        dockedItems: [ {
+            xtype: 'pagingtoolbar',
+            inputItemWidth:40,
+            id: 'dock',
+            store: store,
+            pageSize: pageSize,
+            dock: 'bottom',
+            displayInfo: true,
+            items: ['每页显示数：', pagesize_combox]
+        } ]
+    });
+
+
+         /**
+     * 布局
+     */
+    Ext.create('Ext.container.Viewport', {
+        layout: 'fit',
+        items: [{
+            xtype:'panel',
+            layout: 'vbox',
+            items:[{
+                xtype: 'panel',
+                border: 1,
+                layout: 'fit',
+                flex:1,
+                width:'100%',
+                tbar:[{
+                    xtype:'fieldset',
+                    title: '<font color="gray">查询条件</font>',
+                    margin: 10,
+                    items:AppForm,
+                    flex: 1,
+                    width: '100%',
+                    height: '200'
+                }],
+                items:[grid]
+            }]
+        }]
+    });   
+
+
+extjs  选中行获取行数据   在grid 添加监听
+      listeners: {
+           selectionchange : function(model, records) {
+                if (records != 'undefined' && records.length > 0) {
+                    var 区局 = records[0].data.区局;        //获取行数据
+                    var 参数级别 = records[0].data.参数级别;        //获取行数据
+                    var 参数变化数量 = records[0].data.参数变化数量;        //获取行数据
+                    var 参数名称 = records[0].data.参数名称;        //获取行数据
+                    alert("参数名称==="+参数名称+"\n  区局==="+区局+"\n 参数级别==="+参数级别+"\n 参数变化数量==="+参数变化数量 );
+                }
+            }
+
+        }   
+
+extjs 单机单元格获取数据 在单元格添加监听
+     listeners:{
+                click: function (grid,e,rowIndex) {
+                    console.log(e);
+                    console.log(rowIndex);
+                    console.log(grid.getStore().data.items[rowIndex]);
+                    var data = grid.getStore().data.items[rowIndex].data;
+                    var 区局 = data.区局;       //获取行数据
+                    var 参数级别 = data.参数级别;       //获取行数据
+                    var 参数变化数量 = data.参数变化数量;       //获取行数据
+                    var 参数名称 = data.参数名称;       //获取行数据
+                    alert("参数名称==="+参数名称+"\n  区局==="+区局+"\n 参数级别==="+参数级别+"\n 参数变化数量==="+参数变化数量 );
+                    console.log(data);
+                }
+            }
+
+
+            修改列的颜色
+        {
+            header : '建议值',
+            dataIndex : '建议值',
+            align : 'center',
+            renderer: function (val,cellmeta, record) {
+                var v2 = record.get('北向值2')
+                console.log(cellmeta)
+                if (v2) {
+                    cellmeta.style="color:red"
+                }
+                return val
+            }
+        },
+
+
+        直接设置属性 disabled : true
+        Ext.getCmp('id').disable(); 设置组件禁用
+        Ext.getCmp('id').enable(); 设置组件启用

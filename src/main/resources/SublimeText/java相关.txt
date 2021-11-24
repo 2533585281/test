@@ -1,0 +1,137 @@
+java截取某个字符之前或者之后的字符串
+
+	String str = "lly://enterVideoList?result={jsonString}";
+
+    截取?之前字符串
+    String str1=str.substring(0, str.indexOf("?"));
+    截取?之后字符串
+    String str1=str.substring(0, str.indexOf("?"));
+    String str2=str.substring(str1.length()+1, str.length());
+
+    StringBuffer 可以使用delete方法截取字符串
+
+java 截取字符串中汉字
+
+    private Map<String,Object> subStringSite(String string) {
+        Map<String,Object> map=new HashMap<>(5);
+        String  string="CUDU0010922桂林室分(共主控200M)CUDU3"; // 字符串
+        String reg = "[\u4e00-\u9fa5]";                       // 正则 匹配汉字
+        int index = -1;                                       // 下标
+        if (string.matches (".*" + reg + ".*")){              // 第一个汉字下标
+            index = string.split (reg)[0].length();           
+        }
+        map.put("userLabel",string.substring(0,index));       // 保存一下
+        System.out.println(string.substring(index,string.length()));
+        String s=string.substring(index,string.length());     // 拆分一下字符串
+        for (int j=0;j<s.length();j++){                       // 循环最后一个汉字下标
+            int index2=j+1;                                   // 
+            if (s.substring(j,index2).matches(reg)||")".equals(s.substring(j,index2))){ // 取出字符串的每个下标对应的值进行对比
+                map.put("labelName",s.substring(0,index2));   // 更新，记录最后一个汉字的下标位置
+            }
+        }
+        return map;                                           // 返回结果
+    }
+
+double 转String 不要小数
+        double number = 12.0;  
+        System.out.println(number);                         //12.0  
+        System.out.println(Double.toString(number));        //12.0  
+        DecimalFormat decimalFormat = new DecimalFormat("###################.###########");  
+        System.out.println(decimalFormat.format(number));   //12 
+
+
+java Map循环
+    public Object queryRegion(String dtime, String network, String cellid, String enbid) {
+        List<Map<String, Object>> list= kpi.queryRegion(dtime,network,cellid,enbid);  //得到数据
+        List<Map<String, Object>> list2= kpi.getbefore(dtime,network,cellid,enbid);
+        List<Map<String, Object>> list3= kpi.getafter(dtime,network,cellid,enbid);
+        Map<String, Object> map = new HashMap<>();                                    
+        map.put("DTIME", "幅度");
+
+        if (!list2.isEmpty()) {
+            Map<String, Object> m1 = list2.get(0);       //将list的对应下标对象取出，存成Map对象
+            Map<String, Object> m2 = list3.get(0);
+            for (Map.Entry<String, Object> entry1 : m1.entrySet()) {   //对Map进行遍历
+                String key = entry1.getKey();                          //取到对应的key
+                if ("DTIME".equals(key)||"CELLID".equals(key)||"ENBID".equals(key)) {  //不需要处理的key，跳过
+                    continue;
+                }
+                Object v1 = entry1.getValue();                         //取到第一个Map对应的value
+                BigDecimal value1 = v1 != null && !"".equals(v1) ? (BigDecimal) v1 : BigDecimal.ZERO;//对value处理，不为空返回原本值，如果为空返回0
+
+                Object v2 = m2.get(key);                               //取到第二个Map对应的value
+                BigDecimal value2 = v2 != null && !"".equals(v2) ? (BigDecimal) v2 : BigDecimal.ZERO;
+                BigDecimal value = value2.subtract(value1);            // 第二的值减去第一的值      BigDecimal的减方法  subtract()
+                map.put(key, value);                                   // Map存获取到的值
+            }
+        }
+
+        list.addAll(list2);
+        list.addAll(list3);
+        list.add(map);               //将数据添加到list
+
+        return list;  //返回数据
+    }
+    Map 遍历
+    // 1. keySet
+        for (String key : hm.keySet()) {
+            System.out.println(key + ": " + hm.get(key));
+        }
+    // 2. entrySet
+        for (Entry<String, String> entry : hm.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+    // 3. forEach
+        hm.forEach((key, value) -> {
+            System.out.println(key + ": " + value);
+        }); 
+
+
+    String 转成 Map
+    Map<String, Object> maps= (Map<String, Object>) JSON.parse(result);  
+    System.out.println(maps);
+    Map 转成 String 
+    JSONObject jsonObject = JSONObject.fromObject(maps);
+    String data=jsonObject.toString();
+    String 转成Object 对象  
+        需要 引入 import net.sf.json.JSONObject;
+    JSONObject jsonObject=JSONObject.fromObject(result);           // 字符串转成对象
+    JSONArray jo=JSONArray.fromObject(jsonObject.get("outPra"));   // 字符串转成集合
+    maps.put("failInfo",jo.getJSONObject(0).get("failInfo"));      // 
+
+
+
+    Java 后台调接口  //封装
+    String json = HttpClientUtil.doPostJson("http://10.18.6.152:8108/api/v1/sceneScript", JSONUtils.toJSONString(result));
+    JSONObject jsonObject = JSONObject.parseObject(json);
+    //  无封装
+    String json = HttpUtil.post("http://10.18.6.152:8108/api/v1/sceneScript", result);
+
+
+
+
+
+说明（来自阿里巴巴Java开发手册）：   41页
+1.  keySet 其实是遍历了 2 次，一次是转为 Iterator 对象，另一次是从 hashMap 中取出 key 所对应的 value。
+    而 entrySet 只是遍历了一次就把 key 和 value 都放到了 entry 中，效率更高。
+    如果是 JDK8，使用 Map.forEach 方法。
+---------------------------------------------------------------------------------------------------------------------------
+2.  判断集合内部的元素是否为空，使用 isEmpty()方法，而不是 size()==0 的方式
+---------------------------------------------------------------------------------------------------------------------------
+3.  不要在 foreach 循环里进行元素的 remove/add 操作。remove 元素请使用 Iterator方式
+        List<String> list = new ArrayList<>();
+        list.add("1");
+        list.add("2");
+        Iterator<String> iterator = list.iterator();
+        while (iterator.hasNext()) {
+         String item = iterator.next();
+         if (删除元素的条件) {
+         iterator.remove();
+         }
+        }
+
+
+       
+
+
+    

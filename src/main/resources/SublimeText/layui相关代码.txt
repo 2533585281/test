@@ -1,0 +1,413 @@
+	https://maplemei.gitee.io/xm-select/#/component/install    <!--多选下拉框  丰富组件，风格，元素-->
+    https://www.layui.site/index.htm                  layui 镜像
+
+
+	layui.config({
+	    base: '../plugin/layui/plugin/'
+	}).extend({
+	   xmSelect: 'xm-select',   <!--多选下拉框  html代码 @1 -->
+       excel: 'excel-1.7.4'     <!--Excel导出-->
+	}).use(['table','laydate','form','layer','xmSelect','excel'], function(){
+	 var form = layui.form,
+	     $ = layui.jquery,
+	     layer = layui.layer,
+	     laydate = layui.laydate,
+		 xmSelect= layui.xmSelect,
+	     table = layui.table,
+		 excel = layui.excel;
+		 
+	 <!--多选下拉框 -->
+	 const xmSelectConf = {
+	     filterable: true,
+	     toolbar: {
+	         show: true
+	     },
+	     model: {
+	         label: {
+	             block: {
+	                 showCount: 1
+	             }
+	         }
+	     }
+	 }
+<!--   -----------------------------@1-----------------------------   -->
+		<!-- 		<div class="layui-inline">
+					    <label class="layui-form-label">核查参数</label>
+					    <div class="layui-input-inline"   style="width: 210px;">
+						    <div id="hc" name="hc"  ></div>
+						</div>		
+					</div>           -->
+<!--   -----------------------------@1-----------------------------   -->
+	 <!--渲染一个多选下拉框  无值时  -->
+	var hcSelect= xmSelect.render({
+	     ...xmSelectConf,
+	     el: '#hc',   <!--根据id绑定元素-->
+	     name: 'hc',  <!--渲染xmSelect name-->
+	     layVerify: 'required',   <!--必填项，不能为空-->
+	     data: []
+	 })
+
+	 <!--渲染一个多选下拉框 动态赋予值 data数据样式
+					 var data = [{name:'PLMN',value:'PLMN'},{name:'PCI',value:'PCI'},{name:'TAC',value:'TAC'},{name:'频点号',value:'频点号'}];
+					
+					// 核查参数
+					var hcSelect=xmSelect.render({ 
+					    ...xmSelectConf,
+					    el: '#hc',
+					    name: 'hc',
+					    layVerify: 'required',   <!--必填项，不能为空-->
+					    data: data
+					}) 
+					 var hcValue=hcSelect.getValue();//获取多选下拉框选中的值
+
+					// 核查参数
+					hcSelect.update({
+						data:data2
+					})
+
+		-->			
+	 
+     <!--监听事件页面    lay-filter="changeCJ" -->
+<!--	<div class="layui-inline">
+					    <label class="layui-form-label">厂家</label>
+					    <div class="layui-input-inline">
+							<select id="subwey" name="subwey" lay-filter="changeCJ" lay-verify="required">
+								<option value=""></option>
+								<option value="HW">华为</option>
+								<option value="ZX">中兴</option>
+							</select>
+					    </div>
+					</div>    -->
+	 //厂家发生改变  
+	 form.on('select(changeCJ)', function(data){
+					$("#direction").val("");
+					$("#Date").val("");
+					$("#hc").val("");          //清空其他元素的值
+	 				if(data.value == "HW"){
+	 					form.render('select');
+	 				}else if(data.value=="ZX"){
+	 					form.render('select');//select是固定写法 不是选择器 重新渲染select
+	 				}
+					});
+	// 网络发生改变  changeWL
+	form.on('select(changeWL)', function(data){
+					$("#Date").val("");  
+						//清空赋值
+					$("#hc").empty();
+					var data2=[];
+					if(data.value == "4G"){
+						 data2 = [{name:'PLMN',value:'PLMN'},{name:'PCI',value:'PCI'},{name:'TAC',value:'TAC'},{name:'频点号',value:'频点号'}];
+					}else if(data.value=="5G"){
+						 data2 = [{name:'PLMN',value:'PLMN'},{name:'PCI',value:'PCI'},{name:'TAC',value:'TAC'},{name:'频点号',value:'频点号'},{name:'部署方式',value:'部署方式'}];
+					}
+					 <!--渲染一个多选下拉框 动态赋予值 -->
+					// 核查参数
+					hcSelect.update({
+						data:data2
+					})
+					var subwey=$('#subwey').val();
+					if(subwey==""||subwey==null){
+						layer.msg("厂家不能为空");
+						return
+					}
+					var direction=$('#direction').val();
+					
+					var params= {
+                        direction: direction,
+                        subwey: subwey
+                    };
+                    <!--ajax请求-->
+					$.ajax({
+					    url: '/parameterCheck/ncell/queryDate',  //请求路径
+					    data: params,                            //参数
+					    type: 'GET',							 //请求方式
+					    dataType: 'json',                        //数据类型
+					    timeout: 1000*60*5,                      //超时
+					    headers: {                               //请求头
+					        'Content-Type': 'application/json',
+					        username: 'test'
+					    },
+					    success (result) {                       //成功后执行
+					        if (result.code === 1) {
+					            if (!result.data.length) {
+					                layer.msg('没有查询到数据...')
+					                return
+					            }
+					        } else {
+					            layer.alert('查询失败...', {
+					                icon: 2,
+					                anim: 1
+					            })
+					        }
+					    },
+					    error () {                              //失败后执行
+					        layer.alert('查询失败...', {
+					            icon: 2,
+					            anim: 1
+					        })
+					    },
+					    complete () {                          //请求结束必定执行
+					    }
+					})
+				});
+	 
+	   <!--监听表单按钮，data直接获取表单数据  lay-filter="search"        lay-submit="" 表单提交 -->
+	   <!--
+	    <div class="layui-inline">
+		    <button type="button" lay-filter="search" lay-submit="" class="layui-btn layui-btn-normal" >查询</button>
+		</div>
+		-->
+	   //监听提交
+	    form.on('submit(search)', function(data){
+	      layer.msg(JSON.stringify(data.field));
+	   		  
+	   		  $.ajax({url: '/parameterCheck/ncell/query',
+	   		              data: data.field,
+	   		              type: 'GET',
+	   		              dataType: 'json',
+	   		              timeout: 1000*60*5,
+	   		              headers: {
+	   		                  'Content-Type': 'application/json',
+	   		                  username: 'test'
+	   		              },
+	   		              success (result) {
+	   		                  if (result.code === 1) {
+	   							  // table 重载数据
+	   							  table.reload('tableId', {
+	   							      data: result.data
+	   							  })
+	   							  return
+	   		                      if (!result.data.length) {
+	   		                          layer.msg('没有查询到数据...')
+	   		                          return
+	   		                      }
+	   		                  } else {
+	   		                      layer.alert('查询失败...', {
+	   		                          icon: 2,
+	   		                          anim: 1
+	   		                      })
+	   		                  }
+	   		              },
+	   		              error () {
+	   		                  layer.alert('查询失败...', {
+	   		                      icon: 2,
+	   		                      anim: 1
+	   		                  })
+	   		              },
+	   		              complete () {
+	   		              }
+	   		          })
+	      return false;
+	    });
+	  
+	  
+	  let formHeight = $('form.layui-form .layui-form-item').outerHeight(true)
+
+	  <!--渲染一个table实例
+	  		<table id="demo"  lay-filter="demo-table"></table>
+	  -->
+	  table.render({
+		 id: 'tableId',    						//table.render 的id
+	    elem: '#demo',							//页面元素，指定页面table 的id
+	    //url: '/ncell/query'					//如果有url会自动请求数据，table.render 的时候，也会请求
+		even: true,
+		escape: true,
+		cellMinWidth: 150,						//单元格最小宽度
+		height: `full-${formHeight+20}`,		//高度
+		toolbar: true,							//开启头部工具条
+		defaultToolbar: ['filter', {			//默认头部工具条模板
+		    title: '导出',
+		    layEvent: 'table_export',
+		    icon: 'layui-icon-export'
+		}, 'print'],
+		page: true,								//开启分页
+		limit: 20,
+		limits: [10, 15, 20, 25, 50, 100],
+		data: [],								//数据，打开页面默认渲染数据
+	    cols: [[								//列名
+			{ title: '序号',type:'numbers'}
+	      ,{field:'SITE', title: 'SITE', sort: true}
+	    ]] 
+	  });
+	  
+	  // table触发事件   监听头部工具条   layEvent  
+	  table.on('toolbar', function(obj){
+	      switch (obj.event) {
+	          case 'table_export':   //两种导出 Csv文件   Excel 文件
+	              $(this).find('i').after('<ul class="layui-table-tool-panel"><li lay-event="export" data-type="csv">导出到 Csv 文件</li><li lay-event="export" data-type="xlsx">导出到 Excel 文件</li></ul>')
+	              break
+	          case 'export':
+	              exportFile(obj.config.cols, obj.config.data, $(this).data('type'))
+	              break
+	      }
+	  })
+	  
+	  // 导出数据    导出方法
+	  function exportFile (cols, data, type) {
+	      let start = Date.now()
+	  
+	      let [ ... columns ] = cols[0]
+	      let [ ...tableData ] = data
+	  
+	      let titles = {}
+	      // 需要转义内容的列
+	      let filterData = {}
+	  
+	      for (let col of columns) {
+	          let title = col.title,
+	              field = col.field,
+	              templet = col.templet
+	  
+	          if (title === '序号' || field === 'LAY_TABLE_INDEX') {
+	              continue    //不想导出的列可以在这里跳过  忽略
+	          }
+	          if (!field) {
+	              field = title
+	          }
+	          titles[field] = title
+	  
+	          if (templet) {
+	              filterData[field] = (value, line) => {
+	                  return templet(line)
+	              }
+	          } else {
+	              filterData[field] = field
+	          }
+	      }
+	  
+	      // 处理导出数据
+	      tableData = excel.filterExportData(tableData, filterData)
+	  
+	      // 添加表头标题列
+	      tableData.unshift(titles)
+	  
+	      excel.exportExcel({
+	          sheet1: tableData
+	      }, `XXX.${type}`, type)   // XXX为文件名，可更改
+	      tableData = null
+	  
+	      let end = Date.now()
+	      let spent = (end - start) / 1000
+	      layer.msg('导出耗时 ' + spent + ' 秒')
+	  }
+	  
+	  
+	  
+	});
+				
+	<!--动态下拉框赋值-->
+	<!--  html	-->
+
+	<div class="layui-inline">
+		<label class="layui-form-label">问题检测</label>
+			<div class="layui-input-inline">
+				<select id="hc" name="hc"  >
+				</select>
+			</div>
+		</div>
+
+    <!--  js	-->
+
+	if(data.value == "4G"&&subwey=="ZX"){	
+		$("#hc").empty();                   												//先清空下拉框的值        	
+		var data = [{name:'PCI冲突',value:'PCI冲突'},{name:'PCI混淆',value:'PCI混淆'}];		//获取要渲染的数据
+	}else {
+		$("#hc").empty();
+		var data = [{name:'PCI冲突',value:'PCI冲突'},{name:'PCI混淆',value:'PCI混淆'},{name:'源目标间PRACH冲突',value:'源目标间PRACH冲突'},{name:'目标间PRACH冲突',value:'目标间PRACH冲突'}];
+	}
+		//问题检测
+		$("#hc").append(new Option("请选择", ""));											//手动添加请选择
+		$.each(data, function(index, item) {                   								//循环将data加入  data-数据  index-下标、循环次数  item-data.[下标] 
+			$('#hc').append(new Option(item.name,item.value));
+		});
+		//重新渲染
+		form.render("select");																//重新渲染select 下拉框
+
+
+	<!--table.render  右侧工具栏-->
+	<!--   html   -->
+		<table id="TJdemo" lay-filter="test"></table>
+		<script type="text/html" id="barDemo">
+			  <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+		</script>
+	<!--   js    -->
+	cols: [[							//列名
+			{ title: '序号',type:'numbers'}
+	      ,{field:'SITE', title: 'SITE', sort: true}
+	      ,{fixed: 'right', title: '操作', width: 150, align:'center', toolbar: '#barDemo'} //右侧工具栏  toolbar 获取的是id
+	    ]] 
+
+      //监听行工具事件
+	    table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+	      var data = obj.data //获得当前行数据
+	      ,layEvent = obj.event; //获得 lay-event 对应的值
+	      if(layEvent === 'detail'){
+	        layer.msg('查看操作');
+	      }
+	    });
+
+
+
+	<!--layui动态隐藏列-->
+		var cols=[
+			{ title: '序号',type:'numbers'}
+	      ,{field:'SITE',  title: 'SITE', sort: true}
+	      ,{field:'现网MCC', title: '现网MCC', sort: true}
+		  ,{field:'不一致参数', title: '不一致参数', sort: true}
+	      ,{field:'北向',  title: '北向', sort: true}
+	    ]	 
+
+	<!--table.render-->    
+	  table.render({
+		 id: 'tableId',
+	    elem: '#demo',
+		...
+	    cols: [cols] 
+	  });
+
+			if(data.value=="5G"){
+				var cols2=[
+					{ title: '序号',type:'numbers'}
+					,{field:'SITE',  title: 'SITE', sort: true}
+					,{field:'现网MCC', title: '现网MCC', sort: true}
+					,{field:'现网MNC',  title: '现网MNC', sort: true}
+					,{field:'现网CELLID', title: '现网CELLID', sort: true}
+					,{field:'现网频点', title: '现网频点', sort: true}
+					,{field:'现网PCI', title: '现网PCI', sort: true}
+					,{field:'现网TAC', title: '现网TAC', sort: true}
+					,{field:'NR架构选项', title: 'NR架构选项', sort: true}
+					,{field:'不一致参数', title: '不一致参数', sort: true}
+					,{field:'北向',  title: '北向', sort: true}
+					]
+				<!--重点是table.reload-->	
+				table.reload('tableId', {
+					 cols: [cols2]  新的代替旧的cols
+				})
+
+			layui  更改列颜色    或者参考  https://blog.csdn.net/weixin_44543307/article/details/97482237
+			{field: 'ifMember', title: '类型', width: 120, templet: function(d) {
+				debugger;
+		        if (d.strayCurrentEvaluation == "高") {
+		            return ' <span style="color: #F581B1;">' + d.strayCurrentEvaluation + '</span>'
+		        } else if (d.strayCurrentEvaluation == "中") {
+		        	return ' <span style="color: #F581B1;">' + d.strayCurrentEvaluation + '</span>'
+		        } else {
+		            return '';
+		        }
+		    }},
+
+		cols 添加  		   
+		{checkbox: true, fixed: true}  为table添加复选框
+		//获取选中行的数据  
+	   form.on('submit(getSelectRow)', function(data){
+	  		var checkStatus = layui.table.checkStatus('tableId').data;    // 获取table的数据
+	  				var ids = [];
+	  				for(var i=0;i<checkStatus.length;i++){                // 循环
+	  					var str=JSON.stringify(checkStatus[i]);			  // 对象转字符串  JSON.stringify
+	  					ids.push(str)  									  // 将字符串存入数组
+	  				}
+	  				ids = ids.join(',');//必须要写，不然后台获取不到数据
+	  					console.log(ids)
+	     return false;
+	   });
+
