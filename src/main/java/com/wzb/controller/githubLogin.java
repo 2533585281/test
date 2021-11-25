@@ -6,15 +6,16 @@ package com.wzb.controller;
  */
 
 import com.wzb.util.HttpClientUtils;
-import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+
 @Controller
 public class githubLogin {
-    private static String GITHUB_CLIENT_ID = "bc45f7da238826f3b77e";
-    private static String GITHUB_CLIENT_SECRET = "1a6ea9d5b73e6fb3108bc9716d7234c11b1260ea";
+    private static String GITHUB_CLIENT_ID = "e35b792c0c4e08157ac5";
+    private static String GITHUB_CLIENT_SECRET = "7cdfa91867d271374fda29747af878e99400599b";
     private static String GITHUB_REDIRECT_URL = "http://127.0.0.1:8888/githubCallback";
 
     public githubLogin() {
