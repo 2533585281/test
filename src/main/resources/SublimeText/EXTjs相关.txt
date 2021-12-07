@@ -248,7 +248,48 @@ Ext.onReady(function(){
                     console.log(data);
                 }
             }
-        }  ],
+        } ,{// grid 单元格变下拉框
+            header : '建议值2',   // 单元格标题
+            dataIndex : 'SUGGEST2',// 设置列与数据集中数据记录的对应关系
+            align : 'center',
+            editor: {             //  编辑里面内容
+                xtype: 'combo',   // 下拉框
+                editable: false,   // 不可编辑
+                store: Ext.create('Ext.data.Store', {  // 数据
+                    fields: ['name'],   // 数据集数据
+                    data: []
+                }),
+                displayField: 'name',   // 显示的值
+                valueField: 'name',     // 实际的值
+                listeners: {             // 监听 
+                    focus: function (combo) {  // 监听获得焦点事件
+                        var selected = grid.getSelectionModel().getSelection(); // 获得当前行事件
+                        var value = selected[0].get('ID');     // 获得当前行需要判断的值
+                        var paramValue = [];                   // 定义一个空数组
+                        if(value==='T304'){                    // 当条件符合
+                            paramValue=[{'name':'HW'},         // 为空数组赋值
+                                {'name':'ZX'},
+                                {'name':'NK'}]
+                        }else if(value==='UeInactiveTimer'){
+                            paramValue=[{'name':'华为2'},
+                                {'name':'中兴2'},
+                                {'name':'诺基亚2'}]
+                        }else if(value==='Qrxlevmin'){
+                            paramValue=[{'name':'HW2'},
+                                {'name':'ZX2'},
+                                {'name':'NK2'}]
+                        } else {
+                            paramValue=[{'name':'无'}]
+                        }
+                        var store = Ext.create('Ext.data.Store', {    //  定义一个数据集数据
+                            fields: ['name'],
+                            data: paramValue
+                        });
+                        combo.bindStore(store);   // 下拉框绑定store
+                    }
+                }
+            }
+        } ],
         dockedItems: [ {
             xtype: 'pagingtoolbar',
             inputItemWidth:40,
