@@ -23,7 +23,6 @@ public class menuServiceImpl implements menuService {
     @Override
     public List<menu> getAll() {
         List<menu> list = menuDao.getAll();
-        System.out.println(list);
         return list;
     }
 

@@ -10,7 +10,7 @@ public class nulltest {
     public static void main(String[] args) {
         String ss=null;
         try{
-            if(ss.equals("a")){
+            if("a".equals(ss)){
                 System.out.println("a");
             }
 

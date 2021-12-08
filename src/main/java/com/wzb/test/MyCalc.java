@@ -104,10 +104,12 @@ class MyCalc extends WindowAdapter implements ActionListener{
         f.setVisible(true);
     }
     //关闭窗口
+    @Override
     public void windowClosing(WindowEvent e) {
         f.dispose();
     }
 
+    @Override
     public void actionPerformed(ActionEvent e){
         String z,zt;
         //数字按钮
@@ -244,16 +246,21 @@ class MyCalc extends WindowAdapter implements ActionListener{
                 l1.setText("ENTER NUMBER FIRST ");
                 return;
             }
-            if(check==1)
+            if(check==1) {
                 xd =num1+num2;
-            if(check==2)
+            }
+            if(check==2) {
                 xd =num1-num2;
-            if(check==3)
+            }
+            if(check==3) {
                 xd =num1*num2;
-            if(check==4)
+            }
+            if(check==4) {
                 xd =num1/num2;
-            if(check==5)
+            }
+            if(check==5) {
                 xd =num1%num2;
+            }
             l1.setText(String.valueOf(xd));
         }
         //清除标签和内存

@@ -61,15 +61,18 @@ public class SougouImgPipeline {
     private void downloadImg(String url, String cate, String name) throws Exception {
         String path = this.path + "/" + cate + "/";
         File dir = new File(path);
-        if (!dir.exists()) {    // 目录不存在则创建目录
+        // 目录不存在则创建目录
+        if (!dir.exists()) {
             dir.mkdirs();
         }
-        String realExt = url.substring(url.lastIndexOf("."));   // 获取扩展名
+        // 获取扩展名
+        String realExt = url.substring(url.lastIndexOf("."));
         String fileName = name + realExt;
         fileName = fileName.replace("-", "");
         String filePath = path + fileName;
         File img = new File(filePath);
-        if(img.exists()){   // 若文件之前已经下载过，则跳过
+        if(img.exists()){
+            // 若文件之前已经下载过，则跳过
             System.out.println(String.format("文件%s已存在本地目录",fileName));
             return;
         }
@@ -100,8 +103,9 @@ public class SougouImgPipeline {
     public void process(List<String> data, String word) {
         long start = System.currentTimeMillis();
         for (String picUrl : data) {
-            if (picUrl == null)
+            if (picUrl == null) {
                 continue;
+            }
             try {
                 downloadImg(picUrl, word, picUrl);
             } catch (Exception e) {
@@ -124,11 +128,13 @@ public class SougouImgPipeline {
     public void processSync(List<String> data, String word) {
         long start = System.currentTimeMillis();
         int count = 0;
-        ExecutorService executorService = Executors.newCachedThreadPool(); // 创建缓存线程池
+        // 创建缓存线程池
+        ExecutorService executorService = Executors.newCachedThreadPool();
         for (int i=0;i<data.size();i++) {
             String picUrl = data.get(i);
-            if (picUrl == null)
+            if (picUrl == null) {
                 continue;
+            }
             String name = "";
             if(i<10){
                 name="000"+i;
@@ -183,7 +189,8 @@ public class SougouImgPipeline {
             process(data, word);
         } else {
             ExecutorService executorService = Executors.newCachedThreadPool();
-            int num = data.size() / threadNum;    //每段要处理的数量
+            //每段要处理的数量
+            int num = data.size() / threadNum;
             for (int i = 0; i < threadNum; i++) {
                 int start = i * num;
                 int end = (i + 1) * num;

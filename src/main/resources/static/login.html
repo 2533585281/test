@@ -8,7 +8,15 @@
 <h1>三方登录Demo</h1>
 <div>
     <a href="/githubLogin">GitHub登录</a>
-    <a href="/qqLogin">QQ登录</a>
+    <!--<a href="/qqLogin">QQ登录</a>  还未做-->
+    <button onclick="downFile()">下载，一个文件两个sheet</button>
 </div>
 </body>
+<script>
+    function downFile() {
+        alert("下载")
+        var src = '/export2';
+        window.location = src;
+    }
+</script>
 </html>

@@ -130,6 +130,75 @@ java Map循环
          }
         }
 
+   
+    /**
+     * 导出数据多个sheet  
+     */
+    @ResponseBody
+    @RequestMapping("export2")
+    public void export2(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // 获取多个数据集
+        List<Map<String,String>> list =(List)request.getSession().getAttribute("lsParamCount");
+        List<Map<String,String>> lsParamList =(List)request.getSession().getAttribute("lsParamList");
+        // 文件名
+        String fileName = "XXX.xlsx";
+        try {
+            // 设置浏览器属性，控制浏览器下载  
+            response.setHeader("Content-Disposition", "attachment; filename="+new String(fileName.getBytes("gb2312"), "ISO8859-1"));
+            response.setHeader("Connection", "close");
+            response.setHeader("Content-Type", "application/vnd.ms-excel;charset=UTF-8");
+            // 定义输出流
+            OutputStream ouputStream = response.getOutputStream();
+
+            // 处理查到的数据集合
+            List<List<String>> data0 = new ArrayList<List<String>>();
+            for (Map<String,String> m:list){
+                List rowData = new ArrayList();
+                rowData.add(String.valueOf(m.get("PRODUCT")));
+                rowData.add(String.valueOf(m.get("TEMPLATENAME")));
+                rowData.add(String.valueOf(m.get("FREQ")));
+                rowData.add(String.valueOf(m.get("PARAMNAME")));
+                rowData.add(String.valueOf(m.get("COUNT")));
+                data0.add(rowData);
+            }
+            List<List<String>> data1 = new ArrayList<List<String>>();
+            for (Map<String,String> m:lsParamList){
+                List rowData = new ArrayList();
+                rowData.add(String.valueOf(m.get("TIME")));
+                rowData.add(String.valueOf(m.get("NETWORK")));
+                rowData.add(String.valueOf(m.get("PRODUCT")));
+                rowData.add(String.valueOf(m.get("GENBID")));
+                rowData.add(String.valueOf(m.get("CELLID")));
+                rowData.add(String.valueOf(m.get("PARAMNAME")));
+                rowData.add(String.valueOf(m.get("CMVAL")));
+                rowData.add(String.valueOf(m.get("RECVAL")));
+                data1.add(rowData);
+            }
+
+            // sheet 的文件标题
+            String[] headers0 = { "PRODUCT","TEMPLATENAME", "FREQ","PARAMNAME","COUNT"};
+            String[] headers1 = { "TIME","NETWORK", "PRODUCT","GENBID","CELLID","PARAMNAME","CMVAL","RECVAL"};
+            // 工具类
+            ExportExcelUtils eeu = new ExportExcelUtils();
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            eeu.exportExcel(workbook, 0, "历史重要参数核查统计", headers0, data0, ouputStream);
+            eeu.exportExcel(workbook, 1, "历史重要参数核查", headers1, data1, ouputStream);
+
+            //原理就是将所有的数据一起写入，然后再关闭输入流。
+            workbook.write(ouputStream);
+            ouputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    
+
+
+
 
        
 

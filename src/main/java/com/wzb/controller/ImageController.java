@@ -4,20 +4,19 @@ package com.wzb.controller;
  * @Author Administrator
  * @Date 2021/8/4 0004 15:04
  */
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpSession;
-
 import com.wzb.entity.UploadedImageFile;
 import com.wzb.util.ImageUtil;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpSession;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 
 @CrossOrigin//可以加在类上，也可以加到方法上
@@ -27,7 +26,7 @@ public class ImageController {
     @ResponseBody
     public String add(String imageId, HttpSession session, UploadedImageFile uploadedImageFile) throws IOException {
        // File  imageFolder= new File(session.getServletContext().getRealPath("img/imgFile"));
-        File  imageFolder=new File("E:\\img");
+        File imageFolder=new File("E:\\img");
         if(imageId!=null&&imageId!=""){
             imageId+=System.currentTimeMillis();
         }

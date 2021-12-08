@@ -8,7 +8,6 @@ public class Java8Lambda {
     public static void main(String[] args){
         Java8Lambda tester = new Java8Lambda();
 
-
         // 不用类型声明
         MathOperation subtraction = (a, b) -> a - b;
 
@@ -17,7 +16,6 @@ public class Java8Lambda {
 
         // 没有大括号及返回语句
         MathOperation division = (int a, int b) -> a / b;
-
 
         System.out.println("10 + 5 = " + tester.operate(10, 5, MathOperation.addition));
         System.out.println("10 - 5 = " + tester.operate(10, 5, subtraction));
