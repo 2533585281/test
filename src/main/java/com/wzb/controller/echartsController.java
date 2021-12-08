@@ -6,9 +6,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author Administrator
@@ -24,14 +22,13 @@ public class echartsController {
         plist.add(new pie(3,"3333"));
         plist.add(new pie(4,"4444"));
         plist.add(new pie(6,"6666"));
-
         return plist;
     }
-
-
-
 }
 
+/**
+ * 类中类
+ */
 class pie extends SizeRequirements {
     private Integer value;
     private String name;
