@@ -36,3 +36,11 @@ test/simpleWrite      文件内直接执行，easyexcel依赖的简单写
 src/test/java/com/wzb/test/Testsimple  juint 测试，测试简单读，简单写
 
 
+<h3>特别注意</h3>
+downfile/Down        ch.ethz.ssh2 使用一个比较老的jar包，我们可以通过这个链接去查看：http://www.ganymed.ethz.ch/ssh2/ 。我们大致能了解到
+他是一个用纯 Java 实现 SSH-2 协议的库，允许从 Java 程序中连接到 SSH 服务器。而且已经很久不在维护了，我们下载 2006 年 10 月 6 日 这个版本的就行
+。下载之后，我们能看到，几个文件夹放的是项目源码，还有jar包，他都已经提供了，我们先不管源码。先将jar包做成maven依赖，引入项目。windows+r,然后cmd
+，输入 mvn install:install-file -Dfile=C:\Users\Administrator\Desktop\ganymed-ssh2-build210.jar -DgroupId=ch.ethz -DartifactId=ssh2 -Dversion=1.0  -Dpackaging=jar。
+这句话的意思是将jar包生成maven可以引入的依赖，并收到你的本地maven仓库，-Dfile 对应的是解压jar包的地址，-DgroupId 对应的是pom.xml的groupId(组织名)，
+-DartifactId对应的是pom.xml的artifactId(工程名)，-Dversion对应的是pom.xml的version(版本号)，-Dpackaging 的意思是打包方式。
+回车，文件生成成功。就可以在项目中引入依赖了。我已经将我下载的压缩文件放入 resources/compress文件夹。感兴趣可以试一下。
