@@ -10,10 +10,12 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import java.util.List;
 
 @Api(value="学生controller",tags={"学生操作接口"})
 @Controller
+@Validated
 public class studentController {
     @Autowired
     studentService studentService;
@@ -39,7 +42,7 @@ public class studentController {
     @ApiImplicitParam(name = "sid", value = "学生id", required = true, dataType = "String", paramType = "path")
     @ApiOperation("根据id查询学生")
     @GetMapping("/getBysid/{sid}")
-    public student getBysid(@PathVariable("sid") String sid){
+    public student getBysid(@PathVariable("sid") @NotNull(message = "用户id不能为空") String sid){
         return studentService.getBysid(Integer.valueOf(sid));
     }
 
@@ -62,6 +65,14 @@ public class studentController {
     @DeleteMapping("/delstu")
     public Integer deletestu(@RequestBody Integer sid){
         return studentService.deletestuById(sid);
+    }
+
+    @ResponseBody
+    @ApiOperation("修改一个学生,传入属性")
+    @PostMapping("/updatestu2")
+    public Integer updatestu2(@RequestParam Integer sid,@RequestParam String sname,@RequestParam String sage,@RequestParam String sex,@RequestParam String phone){
+        student stu=new student(sid,sname,sage,sex,phone);
+        return studentService.updateStudent(stu);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.wzb.controller;
 
 import com.wzb.util.RedisUtils;
+import com.wzb.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -30,10 +31,12 @@ public class redisController {
     @ApiOperation("根据key查询对应的value")
     @GetMapping("/getKey/{key}")
     @ApiImplicitParam(name = "key", value = "key", required = true, dataType = "String", paramType = "path")
-    public String getKey(@PathVariable("key")String key){
+    public Response getKey(@PathVariable("key")String key){
         String s=redisUtils.get(key);
         System.out.println(s);
-        return s;
+        Response r=new Response();
+        r.setData(s);
+        return r;
     }
 
     /**
@@ -45,12 +48,16 @@ public class redisController {
     @ResponseBody
     @ApiOperation("添加一条数据到redis,key作为key,value作为value,或根据key修改value")
     @PostMapping("/addkey")
-    public String addkey(@RequestParam String key,@RequestParam String value){
+    public Response addkey(@RequestParam String key,@RequestParam String value){
         boolean set = redisUtils.set(key, value);
         if (set){
-            return "数据存入成功！";
+            Response r=new Response();
+            r.setData("数据存入成功！");
+            return r;
         }
-        return "数据存入失败！";
+        Response r=new Response();
+        r.setData("数据存入失败！");
+        return r;
     }
     /**
      * 根据key查询对应的value
@@ -61,12 +68,16 @@ public class redisController {
     @ApiOperation("根据key删除对应的数据")
     @DeleteMapping("/deletevalue/{key}")
     @ApiImplicitParam(name = "key", value = "key", required = true, dataType = "String", paramType = "path")
-    public String deletevalue(@PathVariable("key")String key){
+    public Response deletevalue(@PathVariable("key")String key){
         boolean s=redisUtils.delete(key);
         if (s){
-            return "数据删除成功！";
+            Response r=new Response();
+            r.setData("数据存入成功！");
+            return r;
         }
-        return "数据删除失败！";
+        Response r=new Response();
+        r.setData("数据存入失败！");
+        return r;
     }
 
 }
