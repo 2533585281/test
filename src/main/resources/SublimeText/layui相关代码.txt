@@ -411,3 +411,108 @@
 	     return false;
 	   });
 
+
+
+
+
+	   	//   树模糊搜索    https://blog.csdn.net/zjh19961213/article/details/96427655
+	   	// treeId: tree所在的容器的id
+		// filter: 对应的搜索框的selector或者dom对象
+		// callback: 回调 参数(树节点jquery对象, 输入框对象, 匹配到的节点数量)
+		tree.syncLayuiTreeFilter = function (treeId, filter, callback) {
+		    let treeElem = $('#' + treeId), filterElem = $(filter);
+		    if (!filterElem.length || !filterElem.length) {
+		        return;
+		    }
+		    // 搜索框的监听事件按实际需求来
+		    filterElem.unbind('change').change(function () {
+		        let that = this; //this;
+		        let value = $(that).val().trim();
+		        let HIDE = 'layui-hide';
+		        let hintClass = 'search_hit';
+		        // 先恢复现场
+		        treeElem.find('.' + HIDE).removeClass(HIDE);
+		        treeElem.find('.' + hintClass).removeClass(hintClass)
+		        // 如果有值筛选开始
+		        if (value) {
+		            $.each(treeElem.find('.layui-tree-txt'), function (index, elem) {
+		                elem = $(elem);
+		                let textTemp = elem.text();
+		                if (textTemp.indexOf(value) === -1) {
+		                    // 不存在就隐藏
+		                    elem.closest('.layui-tree-set').addClass(HIDE)
+		                } else {
+		                    // 命中就添加一个class
+		                    elem.addClass(hintClass)
+		                }
+		            });
+		            $.each(treeElem.find('.' + hintClass), function (index, elem) {
+		                elem = $(elem);
+		                // 取消隐藏所有父节点
+		                elem.parents('.layui-tree-set').removeClass(HIDE);
+		                // 展开所有父节点
+		                elem.parents('.layui-tree-set').each(function (i, item) {
+		                    if (!$(item).hasClass('layui-tree-spread')) {
+		                        $(item).find('.layui-tree-iconClick :first').click();
+		                    }
+		                });
+		            });
+		        }
+		        typeof callback === 'function' && callback.call(that, treeElem, filterElem, treeElem.find('.' + hintClass).length);
+		    });
+		};
+		
+		tree.syncLayuiTreeFilter('test12','#queryTree',function (treeElem, filterElem, hitNumbers) {
+		    console.log('hitNumbers', hitNumbers);
+		    layer.msg('找到' + hitNumbers + '个节点');
+		});
+
+
+		// 下载模板
+		$("#template").click(function() {  // 按钮点击事件
+			//  获取数据，可以从后端查询，我这是模板，自己定义
+			var tableData =[{'product':'ZX','gnbid':'5949293','cellid':'4','cellname':'储祥-4'},{'product':'ZX','gnbid':'5949293','cellid':'5','cellname':'储祥-5'}]
+			var filterData={'product':'product','gnbid':'gnbid','cellid':'cellid','cellname':'cellname'}
+			var titles={'product':'厂商','gnbid':'基站号','cellid':'小区号','cellname':'小区名'}
+			// 处理导出数据   调用layui excel 
+			tableData = excel.filterExportData(tableData, filterData)
+			// 添加表头标题列
+			tableData.unshift(titles)
+			excel.exportExcel({
+			    sheet1: tableData
+			}, `小区模板.xlsx`)
+			tableData = null
+			let end = Date.now()
+			let spent = (end - start) / 1000
+			layer.msg('导出耗时 ' + spent + ' 秒')
+		})
+
+		// layui 上传组件
+		//执行upload实例
+		  var uploadInst = upload.render({
+		    elem: '#import' //绑定元素  // 绑定元素，包括但不限于按钮等
+		    ,url: '/importExcel' //上传接口
+			,accept: 'file' //允许上传的文件类型
+			,done: function(res){
+			      //上传完毕回调
+				  if (res.code === 1) {
+				  	// table 重载数据
+				  	table.reload('tableId', {
+				  		data: res.data
+				  	})
+				  	return
+				  	if (!res.data.length) {
+				  		layer.msg('没有查询到数据...')
+				  		return
+				  	}
+				  } else {
+				  	layer.alert('查询失败...', {
+				  		icon: 2,
+				  		anim: 1
+				  	})
+				  }
+			    }  
+		    ,error: function(){
+		      //请求异常回调
+		    }
+		  });

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,14 +50,14 @@ public class studentController {
     @ResponseBody
     @ApiOperation("添加一个学生")
     @PostMapping("/addstu")
-    public Integer addstu(@RequestBody student stu){
+    public Integer addstu(@Validated @RequestBody student stu){
         return studentService.addStudent(stu);
     }
 
     @ResponseBody
     @ApiOperation("修改一个学生")
     @PostMapping("/updatestu")
-    public Integer updatestu(@RequestBody student stu){
+    public Integer updatestu(@Validated @RequestBody student stu){
         return studentService.updateStudent(stu);
     }
 
@@ -131,6 +132,17 @@ public class studentController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 导入excel，读取excel数据
+     * @return
+     */
+    @ApiOperation(value = "导入excel,读取数据", notes = "返回读取数据", produces = "application/json")
+    @PostMapping("/importExcel")
+    @ResponseBody
+    public List<student> importExcel(@RequestParam("file") MultipartFile file) throws IOException {
+        return  studentService.importExcel(file);
     }
 
 

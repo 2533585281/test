@@ -3,10 +3,13 @@ package com.wzb.impl;
 import com.wzb.dao.studentdao;
 import com.wzb.entity.student;
 import com.wzb.service.studentService;
+import com.wzb.util.ExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,5 +41,24 @@ public class studentServiceImpl implements studentService {
     @Override
     public Integer deletestuById(Integer sid) {
         return sdao.deletestuById(sid);
+    }
+
+    @Override
+    public List<student> importExcel(MultipartFile file) throws IOException {
+        //通过工具类，读取excel,得到集合
+        List<ArrayList<String>> list = ExcelUtils.readExcel(file);
+        List<student> result=new ArrayList<>();
+        for (int i = 1; i < list.size(); i++) {
+            student s=new student();
+            s.setSid(Integer.valueOf(list.get(i).get(0)));
+            s.setSname(list.get(i).get(1));
+            s.setSage(list.get(i).get(1));
+            s.setSex(list.get(i).get(1));
+            s.setPhone(list.get(i).get(1));
+            result.add(s);
+        }
+        //可以保存数据库，这里不保存直接返回结果
+        System.out.println(result);
+        return result;
     }
 }

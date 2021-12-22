@@ -2,7 +2,9 @@ package com.wzb.service;
 
 import com.wzb.entity.student;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 @Repository
 public interface studentService {
@@ -15,4 +17,6 @@ public interface studentService {
     Integer updateStudent(student stu);
 
     Integer deletestuById(Integer sid);
+
+    List<student> importExcel(MultipartFile file) throws IOException;
 }

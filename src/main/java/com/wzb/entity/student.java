@@ -1,31 +1,27 @@
 package com.wzb.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class student {
-
+    @NotNull(message = "id不能为空")
     private Integer sid;
-    @NotBlank(message = "用户名不能为空")
+    @NotNull(message = "用户名不能为空")
     private String sname;
-    @NotBlank(message = "年龄不能为空")
+    @NotNull(message = "年龄不能为空")
     private String sage;
-    @NotBlank(message = "性别不能为空")
+    @NotNull(message = "性别不能为空")
     private String sex;
-    @NotBlank(message = "手机号不能为空")
+    @NotNull(message = "手机号不能为空")
     @Pattern(regexp = "^[1][3,4,5,6,7,8,9][0-9]{9}$", message = "手机号格式有误")
     private String phone;
-
-    public student(Integer sid, String sname, String sage, String sex, String phone) {
-        this.sid = sid;
-        this.sname = sname;
-        this.sage = sage;
-        this.sex = sex;
-        this.phone = phone;
-    }
 
     @Override
     public String toString() {

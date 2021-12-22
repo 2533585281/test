@@ -12,8 +12,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  *  @EnableCaching     开启缓存属性
  *  @MapperScan        扫描dao层,也可以是mapper
  *  @EnableSwagger2    开启Swagger
- * http://localhost:8888/swagger-ui.html
- * @author wzb
+ *  http://localhost:8888/swagger-ui.html
+ *  @author wzb
  */
 
 @SpringBootApplication
