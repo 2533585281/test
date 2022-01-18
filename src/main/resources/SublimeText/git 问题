@@ -1,0 +1,3 @@
+git 问题
+	连接被重置 
+	 git config --global http.sslVerify "false"
