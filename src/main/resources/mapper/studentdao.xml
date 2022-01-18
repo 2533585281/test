@@ -6,5 +6,12 @@
         select * from student
     </select>
 
+    <select id="selectPageVo" resultType="com.wzb.entity.student">
+        select * from student
+    </select>
+
+    <select id="getAllUsePaging" resultType="com.wzb.entity.student">
+         select * from student
+    </select>
 
 </mapper>

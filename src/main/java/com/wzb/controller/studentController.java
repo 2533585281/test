@@ -1,11 +1,13 @@
 package com.wzb.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wzb.entity.menu;
 import com.wzb.entity.student;
 import com.wzb.service.studentService;
 import com.wzb.util.ExportExcelUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,33 @@ public class studentController {
     @GetMapping("/getAll")
     @ApiOperation("查询所有学生")
     public List<student> getAll(){
-        return studentService.getAll();
+        return  studentService.getAll();
+    }
+
+    @ResponseBody
+    @GetMapping("/getAllUsePaging")
+    @ApiOperation("查询所有学生,使用分页")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", name = "page", value = "页数", required = true),
+            @ApiImplicitParam(paramType = "query", name = "limit", value = "条数", required = true)
+    })
+    public List<student> getAllUsePaging(Integer page,Integer limit){
+        List<student> allUsePaging = studentService.getAllUsePaging(page, limit);
+        return  allUsePaging;
+    }
+
+    @ResponseBody
+    @GetMapping("/selectPageVo")
+    @ApiOperation("分页查询所有学生")
+    public Page<student> selectPageVo(){
+        Page<student> p=new Page<>();
+        p.setTotal(5L);
+        p.setPages(1L);
+        p.setMaxLimit((long) 5);
+        p.setSize(5L);
+
+
+        return  studentService.selectPageVo(p,1);
     }
 
     @ResponseBody

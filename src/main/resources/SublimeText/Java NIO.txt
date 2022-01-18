@@ -1,0 +1,21 @@
+1. Java NIO 概述
+	Java NIO (New IO 或 Non Blocking IO )是Java1.4版本引入的一个新的IO API,可以替代标准的Java IO API。NIO 支持面向缓冲区，基于通道的IO操作。NIO更加高效的进行文件的读写操作。
+
+	NIO 主要核心部分
+	Channels(通道)     Buffers     Selectors
+
+	Channels(通道)，译为通道，和IO中的Stream(流)是差不多一个等级的，只不过 Stream 是单向的，InputStream,OutputStream,而Channel是双向的，既可以读操作，又可以进行写操作。
+
+	NIO中的Channel的主要实现有，FileChannel(从文件中读取数据),DatagramChannel(通过UDP读取网络数据),SocketChannel(通过TCP读取网络数据)和ServerSocketChannel(监听新的TCP连接，为新连接创建一个SocketChannel),分别对应文件IO,UDP,TCP(Server和Client)。
+
+	Buffer(缓冲区)
+	NIO Buffer的实现有:ByteBuffer,CharBuffer,DoubleBuffer,FloatBuffer,IntBuffer,LongBuffer,ShortBuffer,分别对应基本数据类型： byte,char,double,float,int,long,short。
+
+	Buffer 通常操作，将数据写入缓冲区，调用buffer.flip()反转读写模式,从缓冲区读取数据，buffer.clear() 或 buffer.compact()清除缓冲区数据
+
+
+
+	Selectors 
+	Selector 运行单线程，处理多个Channel,要使用Selector,要向Selectoe注册Channel,调用它的select()方法。
+
+	FileChannel

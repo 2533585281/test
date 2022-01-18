@@ -1,5 +1,7 @@
 package com.wzb.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.PageHelper;
 import com.wzb.dao.studentdao;
 import com.wzb.entity.student;
 import com.wzb.service.studentService;
@@ -21,6 +23,19 @@ public class studentServiceImpl implements studentService {
     @Override
     public List<student> getAll() {
         return sdao.getAll();
+    }
+
+    @Override
+    public List<student> getAllUsePaging(Integer page, Integer limit) {
+        PageHelper.startPage(page, limit);
+        List<student> stuInfo=sdao.getAllUsePaging(page,limit);
+        return stuInfo;
+    }
+
+    @Override
+    public Page<student> selectPageVo(Page<student> page, Integer state) {
+        PageHelper.startPage(1, 5);
+        return sdao.selectPageVo(page, state);
     }
 
     @Override

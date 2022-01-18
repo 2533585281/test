@@ -1,5 +1,6 @@
 package com.wzb.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wzb.entity.student;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,4 +20,9 @@ public interface studentService {
     Integer deletestuById(Integer sid);
 
     List<student> importExcel(MultipartFile file) throws IOException;
+
+    List<student> getAllUsePaging(Integer page, Integer limit);
+
+    Page<student> selectPageVo(Page<student> page, Integer state);
+
 }

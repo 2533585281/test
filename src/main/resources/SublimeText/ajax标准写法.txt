@@ -6,6 +6,7 @@ https://www.cnblogs.com/masonlu/p/10797127.html
      async:true,//请求是否异步，默认为异步，这也是ajax重要特性
      data:{"id":"value"},    //参数值
      type:"POST",   //请求方式
+     traditional:true, //防止深度序列化    jquery1.4版本以后，会对数据(比如数组)进行处理，加上 traditional:true 保证数据不被深度序列化       https://www.cnblogs.com/hxw6/p/9718149.html
      beforeSend:function(){
          //请求前的处理
      },

@@ -516,3 +516,17 @@
 		      //请求异常回调
 		    }
 		  });
+
+
+layui 遇到错误 记录
+		页面存在tab标签，可以切换页面，
+		tab两个页面上都有table,在第二个页面上下载时，可能会影响页面布局，导致第一个tab标签里的table列缩
+
+		解决办法：监听tab切换事件，在切换的时候调整table大小
+		test1 为tab的 lay-filter 值
+		element.on('tab(test1)', function (){
+		 table.resize('tableId3')
+		})
+
+
+
