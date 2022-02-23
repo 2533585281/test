@@ -1,3 +1,23 @@
 git 问题
 	连接被重置 
 	 git config --global http.sslVerify "false"
+	冲突问题，建议先拉取远程代码，然后在提交
+error: failed to push some refs to 'https://gitee.com/wang_zhibo/test.git'
+
+https://blog.51cto.com/888888hfer/2162884
+git init                     	    								初始化本地git仓库
+git add .   														添加文件到本地仓库	
+git commit -m "第一次提交"          				    				提交注释
+git config --global user.name "18239413094"         				配置用户名
+git config --global user.email "2533585281@qq.com"  				配置邮箱
+ssh-keygen -t rsa -C "2533585281@qq.com" 							生成ssh公钥。三次回车， rsa 是生成公钥文件名。
+cat ~/.ssh/id_rsa.pub												查看公钥 id_公钥文件名。 生成文件默认在 C:\Users\Administrator\.ssh
+添加公钥到git
+ssh -T git@gitee.com                                                验证公钥是否添加成功
+git remote add origin https://gitee.com/wang_zhibo/test.git 		绑定远程仓库
+git pull --rebase origin master										先拉取远程仓库默认生成文件
+git push --set-upstream origin master								提交文件
+
+每次文件修改，都需要使用git add .将修改文件提交到本地仓库
+更新提交注释   git commit -m "内容"
+提交文件       git push --set-upstream origin master
