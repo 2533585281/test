@@ -1,5 +1,5 @@
 git 问题
-	连接被重置 
+	连接被重置  OpenSSL SSL_read: Connection was reset, errno 10054
 	 git config --global http.sslVerify "false"
 	冲突问题，建议先拉取远程代码，然后在提交
 error: failed to push some refs to 'https://gitee.com/wang_zhibo/test.git'

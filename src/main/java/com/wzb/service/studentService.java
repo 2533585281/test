@@ -1,5 +1,6 @@
 package com.wzb.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wzb.entity.student;
 import org.springframework.stereotype.Repository;
@@ -23,6 +24,6 @@ public interface studentService {
 
     List<student> getAllUsePaging(Integer page, Integer limit);
 
-    Page<student> selectPageVo(Page<student> page, Integer state);
+    IPage<student> selectPageVo(Page<student> page, Integer state);
 
 }

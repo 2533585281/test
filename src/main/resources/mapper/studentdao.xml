@@ -7,7 +7,7 @@
     </select>
 
     <select id="selectPageVo" resultType="com.wzb.entity.student">
-        select * from student
+        select * from student limit #{page.current},#{page.size}
     </select>
 
     <select id="getAllUsePaging" resultType="com.wzb.entity.student">

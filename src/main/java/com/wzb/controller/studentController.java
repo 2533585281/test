@@ -1,5 +1,6 @@
 package com.wzb.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wzb.entity.menu;
 import com.wzb.entity.student;
@@ -56,15 +57,12 @@ public class studentController {
     @ResponseBody
     @GetMapping("/selectPageVo")
     @ApiOperation("分页查询所有学生")
-    public Page<student> selectPageVo(){
-        Page<student> p=new Page<>();
-        p.setTotal(5L);
-        p.setPages(1L);
-        p.setMaxLimit((long) 5);
-        p.setSize(5L);
+    public IPage<student> selectPageVo(@RequestParam(name="page", defaultValue="1") Integer pageNo,
+                                       @RequestParam(name="limit", defaultValue="10") Integer limit){
+        Page<student> page = new Page<student>(pageNo, limit);
+        IPage<student> pageList = studentService.selectPageVo(page,1);
 
-
-        return  studentService.selectPageVo(p,1);
+        return  pageList;
     }
 
     @ResponseBody

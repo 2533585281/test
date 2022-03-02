@@ -1,5 +1,6 @@
 package com.wzb.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.wzb.dao.studentdao;
@@ -33,8 +34,8 @@ public class studentServiceImpl implements studentService {
     }
 
     @Override
-    public Page<student> selectPageVo(Page<student> page, Integer state) {
-        PageHelper.startPage(1, 5);
+    public IPage<student> selectPageVo(Page<student> page, Integer state) {
+        page.setCurrent((page.getCurrent()-1)*page.getSize());
         return sdao.selectPageVo(page, state);
     }
 

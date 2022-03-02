@@ -1,5 +1,6 @@
 package com.wzb.dao;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wzb.entity.student;
 import org.apache.ibatis.annotations.*;
@@ -32,7 +33,7 @@ public interface studentdao {
      * @param state 状态
      * @return 分页对象
      */
-    Page<student> selectPageVo(Page<student> page, Integer state);
+    IPage<student> selectPageVo(@Param("page") Page<student> page, Integer state);
 
     List<student> getAllUsePaging(Integer page, Integer limit);
 

@@ -1,5 +1,5 @@
 	https://maplemei.gitee.io/xm-select/#/component/install    <!--多选下拉框  丰富组件，风格，元素-->
-    https://www.layui.site/index.htm                  layui 镜像
+    https://www.layuion.com/                  layui 镜像
 
 
 	layui.config({
@@ -530,3 +530,71 @@ layui 遇到错误 记录
 
 
 
+layui  遮罩 
+		let loadIndex=showLoading();
+
+		layer.close(loadIndex);
+
+	  function showLoading () {
+	  	return layer.load(0, {
+	  		shade: [0.1, '#000']
+	  	})
+	  }
+
+
+ // 渲染树
+ 	  tree.render({
+	  	elem: '#test12',
+	  	id: 'ParamTree',
+	  	data: [],
+	  	showCheckbox: true //是否显示复选框
+	  	//,accordion: true // 开启手风琴模式
+	  	,oncheck: function(obj) {
+			//获得选中的节点
+			var checked = tree.getChecked('ParamTree'), checkData = [];
+			// 递归获取选中数据
+			let treeArr = (d) => {
+				if(d.parentId === '0') {
+					treeArr(d.children)
+					return
+				}
+				d.forEach(item => {
+					if(item.children.length) {
+						treeArr(item.children)
+					} else {
+						checkData.push(item)
+					}
+				})
+			}
+			treeArr(checked)
+			tabdata = checkData
+			table.reload('paramtemplate', {
+				data: tabdata
+			})
+			if(tabdata.length<1){
+				$("#importTemplate").val("");
+				form.render('select')
+			}
+	  	}
+	  });	  
+
+// 行内工具栏  按钮
+	<script type="text/html" id="barDemo">
+		{{#  if(d.keBao == ''||d.keBao==null){ }}
+	    <button class="layui-btn layui-btn-xs" lay-event="sendOrders" >派单</button>
+		<button class="layui-btn layui-btn-xs layui-btn-disabled"  >工单详情</button>
+		{{#  } else if(d.keBao !== ''){ }}
+		<button class="layui-btn layui-btn-xs layui-btn-disabled" >派单</button>
+		<button class="layui-btn layui-btn-xs " lay-event="WorkOrder" >工单详情</button>
+		{{#  } }}
+		{{#  if(d.commands == ''||d.commands==null){ }}
+		<button class="layui-btn layui-btn-xs layui-btn-disabled" >参数调整</button>
+		{{#  } else if(d.commands !== ''){ }}
+		<button class="layui-btn layui-btn-xs" lay-event="paramTuning">参数调整</button>
+		{{#  } }}
+		{{#  if(d.indicators == ''||d.indicators==null){ }}
+		<button class="layui-btn layui-btn-xs layui-btn-disabled" >性能评估</button> 
+		{{#  } else if(d.indicators !== ''){ }}
+		<button class="layui-btn layui-btn-xs " lay-event="assess" >性能评估</button> 
+		{{#  } }}
+	</script>	  
