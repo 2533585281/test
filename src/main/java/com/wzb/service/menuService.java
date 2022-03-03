@@ -12,4 +12,6 @@ public interface menuService {
     List<menu> getAll();
 
     List<menu> getTree();
+
+    menu getTreeGetEntity();
 }

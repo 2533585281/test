@@ -35,6 +35,10 @@ public class menuController {
         return menuService.getTree();
     }
 
-
+    @ResponseBody
+    @GetMapping("/getTreeGetEntity")
+    public menu getTreeGetEntity(){
+        return menuService.getTreeGetEntity();
+    }
 
 }

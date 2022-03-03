@@ -17,4 +17,15 @@ public class menu {
     String parentId;
     List<menu> children;
 
+    public menu() {
+    }
+
+    public menu(String id, String name, String text, String url, String parentId, List<menu> children) {
+        this.id = id;
+        this.name = name;
+        this.text = text;
+        this.url = url;
+        this.parentId = parentId;
+        this.children = children;
+    }
 }

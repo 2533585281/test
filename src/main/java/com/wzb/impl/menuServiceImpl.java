@@ -85,6 +85,37 @@ public class menuServiceImpl implements menuService {
         return m;
     }
 
+    @Override
+    public menu getTreeGetEntity() {
+        // 首先查出我们的数据
+        List<menu> list = menuDao.getAll();
+        menu maxMenu=new menu();
+        maxMenu.setId("0");
+        buildChilTree2(maxMenu, list);
+        return maxMenu;
+    }
+
+    /**
+     * 递归方法，建立子树形结构
+     * @param m
+     * @param list
+     * @return
+     */
+    private menu buildChilTree2(menu m,List<menu> list) {
+        // 定义一对象里面的儿子集合
+        List<menu> chilMenus =new ArrayList<menu>();
+        // 遍历所有数据
+        for (menu menu:list) {
+            // 遍历数据的父id 与 传入父对象的id 相同
+            if (menu.getParentId().equals(m.getId())){
+                // 递归，自己调自己，查出 下面所有儿子
+                chilMenus.add(buildChilTree2(menu,list));
+            }
+        }
+        // 父对象修改儿子集合
+        m.setChildren(chilMenus);
+        return m;
+    }
 
 
 
