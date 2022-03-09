@@ -112,3 +112,128 @@
             }
         }
     }
+
+
+
+
+
+    //输入输出流下载文件 另一种方法
+        // js 
+        var iframe = ('<iframe src="/tPerson/exportCW' +
+        '" style="display: none"></iframe>');
+        $('body').append(iframe);
+
+        // Java 使用 EasyExcel 导入导出
+     /**
+     * export 导出错误数据
+     * @return
+     */
+    //错误集合
+    List<TPerson> CwList= new ArrayList<>();
+
+    @ApiOperation(value="人员信息-导出Excel文件", notes="人员信息-导出Excel文件")
+    @GetMapping(value = "/exportCW")
+    @ResponseBody
+    public void exportCw(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        String fileName = "错误人员信息_"+ System.currentTimeMillis() + ".xlsx";
+
+        response.setContentType("application/octet-stream;charset=ISO8859-1");
+        response.setHeader("Content-Disposition", "attachment;filename="+ new String(fileName.getBytes(),"ISO8859-1"));
+        response.addHeader("Pargam", "no-cache");
+        response.addHeader("Cache-Control", "no-cache");
+
+        System.out.println("错误人员信息 导出 ");
+        EasyExcel.write(response.getOutputStream(), TPerson.class).sheet("sheet1").doWrite((List<TPerson>)CwList);
+        CwList.clear();
+    }
+
+
+
+
+      Result rrr=new Result();
+     /*
+      * import 导入
+      * @return
+      */
+     @ApiOperation(value="人员信息-导入Excel文件", notes="人员信息-导入Excel文件")
+     @PostMapping(value = "/import")
+     @ResponseBody
+     public Result<?>  importFile(@RequestParam("file") MultipartFile file,HttpServletRequest req, HttpServletResponse response) throws IOException {
+        // 写法2：
+         // 匿名内部类 不用额外写一个DemoDataListener
+         // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
+         EasyExcel.read(file.getInputStream(), TPerson.class, new ReadListener<TPerson>() {
+             /**
+              * 单次缓存的数据量
+              */
+             public static final int BATCH_COUNT = 3000;
+             /**
+              *临时存储
+              */
+             private List<TPerson> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
+             // invoke 每读取一条记录执行一次
+             @Override
+             public void invoke(TPerson tPerson, AnalysisContext context) {
+                if(!StringUtils.isEmpty(tPerson.getPersonname())){
+                    cachedDataList.add(tPerson);
+                    System.out.println(tPerson);
+                }
+             }
+
+             // 文件读取完执行一次
+             @Override
+             public void doAfterAllAnalysed(AnalysisContext context) {
+                 rrr=verifyData();
+                 if(rrr.getCode()==200){
+                     saveData();
+                 }
+             }
+
+             /**
+              * 校验数据
+              */
+             private Result verifyData() {
+                 for (int j = 0; j <cachedDataList.size() ; j++) {
+                    TPerson tPerson=cachedDataList.get(j);
+                     int num=j+1;
+                     //身份证号
+                     if(!StringUtils.isEmpty(tPerson.getCertificateno())){
+                        // 验证工具类 PhoneFormatCheckUtils
+                         if(PhoneFormatCheckUtils.isIDNumber(tPerson.getCertificateno())){
+                         }else {
+                             return Result.error("第"+num+"行身份证信息不正确！",1);
+                         }
+                     }
+                     //手机号
+                     if(!StringUtils.isEmpty(tPerson.getPhoneno())){
+                         if(PhoneFormatCheckUtils.isChinaPhoneLegal(tPerson.getPhoneno())){
+                         }else {
+                             return Result.error("第"+num+"行手机号信息不正确！",1);
+                         }
+                     }
+                     // 邮箱
+                     if(!StringUtils.isEmpty(tPerson.getEmail())){
+                         if(PhoneFormatCheckUtils.isEmail(tPerson.getEmail())){
+                         }else {
+                             return Result.error("第"+num+"行邮箱信息不正确！",1);
+                         }
+                     }
+                 }
+                return Result.OK(0);
+             }
+
+             /**
+              * 加上存储数据库
+              */
+             private void saveData() {
+                 log.info("{}条数据，开始存储数据库！", cachedDataList.size());
+                 if(cachedDataList.size()>0){
+                    int bs= tPersonService.batchSave(cachedDataList);
+                 }
+                 log.info("存储数据库成功！");
+             }
+         }).sheet().doRead();
+
+         return rrr;
+     }
