@@ -53,7 +53,8 @@ spring:
         # 启用
         enabled: true
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:mapper/xml/*.xml
+#  mapper-locations: classpath*:com/wzb/mapper/**/xml/*Mapper.xml
   type-aliases-package: com.wzb.entity
   configuration:
     # 开启全局缓存配置
