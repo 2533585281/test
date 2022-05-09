@@ -197,7 +197,12 @@ java Map循环
 
     
 
-
+    // 页面传入日期格式的字符串时，而实体类是Date类型，加上注解，使其自动转换
+    // DateTimeFormat入参格式化   JsonFormat 出参格式化
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date invadeTime;
+    >> @JsonFormat 注解不是 Spring 自带的注解，所以使用该注解前需要添加 jackson 相关的依赖包。当然，如果是 SpringBoot 项目就不需要自己手动添加依赖了，因为在 spring-boot-start-web 下已经包含了 jackson 相关依赖。
 
 
        

@@ -6,10 +6,13 @@ import com.wzb.entity.menu;
 import com.wzb.entity.student;
 import com.wzb.service.studentService;
 import com.wzb.util.ExportExcelUtils;
+import com.wzb.util.Response;
+import com.wzb.util.VerifyCodeUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,6 +32,7 @@ import java.util.List;
 @Api(value="学生controller",tags={"学生操作接口"})
 @Controller
 @Validated
+@Slf4j
 public class studentController {
     @Autowired
     studentService studentService;
@@ -171,6 +176,26 @@ public class studentController {
         return  studentService.importExcel(file);
     }
 
+    /**
+     * 生成登录验证码图片
+     * @return
+     */
+    @ApiOperation(value = "生成登录验证码图片", notes = "生成登录验证码图片", produces = "application/json")
+    @PostMapping("/verifyCode")
+    @ResponseBody
+    public Response verifyCode(String[] args, HttpServletResponse response, HttpSession session) {
+        try {
+            int w = 140, h = 40;
+            String verifyCode = VerifyCodeUtils.outputVerifyImage(w, h, response.getOutputStream(), 4);
+            session.setAttribute("code", verifyCode);
+            log.info("生成的验证码为：{}", verifyCode);
+            return Response.ok(verifyCode);
+        } catch (IOException e) {
+            log.error("获取验证码异常--------", e);
+            e.printStackTrace();
+            return Response.ok("获取验证码异常");
+        }
+    }
 
 
 }
