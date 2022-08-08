@@ -542,6 +542,67 @@ layui  遮罩
 	  }
 
 
+	  function showLoading () {
+	  	return layer.msg('正在处理请稍后', {
+                    icon: 16
+                    ,shade: [0.3,'#fff']
+　　　　　　　　　　　,time:false
+　　　　　　　　　　　//在后面执行的方法中，发现加载层消失后有一段时间间隔。故用到了time这个参数
+                });
+	  }
+
+layui.table获取数据时添加遮罩层	   https://blog.csdn.net/lanquankk/article/details/103818270 思路就是直接在layui的table.js加载遮罩
+
+	找到文件modules/table.js
+
+	if(i.startTime=(new Date).getTime(),a.url) {
+		var tableloading = layer.load(1, {shade: [0.1,'#fff'] });// 遮罩新添加
+        var r= {};
+        r[l.pageName]=e,r[l.limitName]=a.limit;
+        var d=t.extend(r,a.where);
+        a.contentType&&0==a.contentType.indexOf("application/json")&&(d=JSON.stringify(d)),
+        /*i.loading(),*/ // 遮罩新添加
+        t.ajax({type:a.method||"get",url:a.url,contentType:a.contentType,data:d,dataType:"json",headers:a.headers|| {},
+            success:function(t) {
+                "function"==typeof a.parseData&&(t=a.parseData(t)||t),t[n.statusName]!=n.statusCode?(i.renderForm(),i.errorView(t[n.msgName]||'返回的数据不符合规范，正确的成功状态码应为："'+n.statusName+'":'+n.statusCode)):(i.renderData(t,e,t[n.countName]),o(),a.time=(new Date).getTime()-i.startTime+" ms"),i.setColsWidth(),"function"==typeof a.done&&a.done(t,e,t[n.countName])
+                ;layer.close(tableloading);//遮罩新添加
+            },
+            error:function(e,t) {
+                i.errorView("数据接口请求异常："+t),i.renderForm(),i.setColsWidth()
+                ;layer.close(tableloading);//遮罩新添加
+            }
+		})
+		}else if(a.data&&a.data.constructor===Array) {
+        var c= {},s=e*a.limit-a.limit;
+        c[n.dataName]=a.data.concat().splice(s,a.limit),c[n.countName]=a.data.length,i.renderData(c,e,c[n.countName]),o(),i.setColsWidth(),"function"==typeof a.done&&a.done(c,e,c[n.countName])
+    }
+
+    layui.all.js调用模式  layui.all.js 同样需要添加
+
+	if(i.startTime=(new Date).getTime(),a.url){
+	var tableloading = layer.load(1, {shade: [0.1,'#fff'] });// 遮罩新添加
+	    var r={};
+	    r[l.pageName]=e,
+	    r[l.limitName]=a.limit;
+	    var d=t.extend(r,a.where);
+	    a.contentType&&0==a.contentType.indexOf("application/json")&&(d=JSON.stringify(d)),
+	    /*i.loading(),*/  // 遮罩新添加
+	    t.ajax({type:a.method||"get",url:a.url,contentType:a.contentType,data:d,dataType:"json",headers:a.headers||{},
+	        success:function(t){
+	            "function"==typeof a.parseData&&(t=a.parseData(t)||t),t[n.statusName]!=n.statusCode?(i.renderForm(),i.errorView(t[n.msgName]||'返回的数据不符合规范，正确的成功状态码应为："'+n.statusName+'": '+n.statusCode)):(i.renderData(t,e,t[n.countName]),o(),a.time=(new Date).getTime()-i.startTime+" ms"),i.setColsWidth(),"function"==typeof a.done&&a.done(t,e,t[n.countName])
+	            ;layer.close(tableloading);// 遮罩新添加
+	        },
+	        error:function(e,t){
+	            i.errorView("数据接口请求异常："+t),i.renderForm(),i.setColsWidth()
+	            ;layer.close(tableloading);// 遮罩新添加
+	        }
+	    })
+
+	}else if(a.data&&a.data.constructor===Array){
+	    var c={},s=e*a.limit-a.limit;c[n.dataName]=a.data.concat().splice(s,a.limit),c[n.countName]=a.data.length,i.renderData(c,e,c[n.countName]),o(),i.setColsWidth(),"function"==typeof a.done&&a.done(c,e,c[n.countName])
+	}
+
+
  // 渲染树
  	  tree.render({
 	  	elem: '#test12',
@@ -577,6 +638,77 @@ layui  遮罩
 			}
 	  	}
 	  });	  
+
+//layui树选中较多时加载慢处理
+原本: 原因是返回数字layui tree会执行click()方法,点击节点，数组时也是点击，但数组较大时，点击就比较消耗时间，更改思路就是数组时通过DOM元素设置节点选中，提升速度
+   //设置选中节点
+     Class.prototype.setChecked = function(checkedId){
+       var that = this
+       ,options = that.config;
+  
+       //初始选中
+       that.elem.find('.'+ELEM_SET).each(function(i, item){
+         var thisId = $(this).data('id')
+        ,input = $(item).children('.'+ELEM_ENTRY).find('input[same="layuiTreeCheck"]')
+         ,reInput = input.next();
+        
+         //若返回数字
+         if(typeof checkedId === 'number'){
+           if(thisId == checkedId){
+             if(!input[0].checked){
+               reInput.click();
+             };
+             return false;
+           };
+         } 
+         //若返回数组
+         else if(typeof checkedId === 'object'){
+           layui.each(checkedId, function(index, value){
+             if(value == thisId && !input[0].checked){
+               reInput.click();
+               return true;
+             }
+           });
+         };
+       });
+     };
+更改后
+	//初始选中-设置选中节点
+    that.elem.find('.'+ELEM_SET).each(function(i, item){
+      var thisId = $(this).data('id')
+      ,input = $(item).children('.'+ELEM_ENTRY).find('input[same="layuiTreeCheck"]')
+      ,reInput = input.next();
+	  
+        // if (item.length > 0) {
+			// debugger
+            //若返回数字
+            if (typeof checkedId === 'number') {
+                if (thisId == checkedId) {
+                    if (!input[0].checked) {
+                        reInput.click();
+                    };
+                    return false;
+                };
+            }
+            //若返回数组
+            else if (typeof checkedId === 'object') {
+                if (checkedId.indexOf(thisId) != -1 && !input[0].checked) {
+                    //使用click()事件来选中当前节点，当默认选中项很多的时候加载速度太慢
+                    //reInput.click();
+                    //return true;
+                    //设置当前节点input选中
+                    input.prop("checked", "checked");
+                    //设置当前节点上级input选中
+                    input.parents(".layui-tree-pack").prev(".layui-tree-entry").children(".layui-tree-main").find('input[same="layuiTreeCheck"]').prop("checked", "checked");
+                }
+            };
+        // }
+    });
+      that.renderForm('checkbox');//重新渲染checkbox选中
+  };
+
+
+	  
 
 // 行内工具栏  按钮
 	<script type="text/html" id="barDemo">

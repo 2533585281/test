@@ -205,7 +205,81 @@ java Map循环
     >> @JsonFormat 注解不是 Spring 自带的注解，所以使用该注解前需要添加 jackson 相关的依赖包。当然，如果是 SpringBoot 项目就不需要自己手动添加依赖了，因为在 spring-boot-start-web 下已经包含了 jackson 相关依赖。
 
 
-       
+    // java 后端调用接口   
+    public Object getImage(HashMap<String, String> queryParam) throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();   // 创建http客户端
+
+        HttpGet httpGet = new HttpGet(queryParam.get("path"));          // queryParam.get("path") 请求的路径，get请求，参数一并拼接在里面
+
+        CloseableHttpResponse httpResponse = null;                      // http返回内容
+        try {
+            httpResponse = httpClient.execute(httpGet);                 // 客户端执行 HttpGet 对象
+            HttpEntity httpEntity = httpResponse.getEntity();           // HttpEntity 拿到返回数据
+            String text = EntityUtils.toString(httpEntity);             // 处理返回数据
+            return text.substring(16,text.length()-2);                  // 返回结果
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                if (httpResponse != null){
+                    httpResponse.close();
+                }
+                httpClient.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //hutool Http请求-HttpRequest 
+    String strVQDResult = HttpRequest.post(url)                         // url 请求的路径
+            .header("Content-Type", "application/json")                 // header 请求头内容
+            .body(str)                                                  // body 请求体内容，一般为JSON字符串内容
+            .execute().body();
+    Map<String,Object> jsonResult = JSONUtil.parseObj(strVQDResult);    // 转成Map,也可以转成 JSONObject
 
 
+
+    // 遍历list集合
+    List<String> sList=new ArrayList<>();
+    sList.add("123");
+    sList.add("456");
+
+    // 使用流和Lambda 表达式
+    Stream<String> stream = sList.stream();
+    stream.filter(n->n.contains("123")).forEach(n->System.out.println(n));
     
+    // 使用迭代
+    Iterator<String> iterator = sList.iterator();
+    while (iterator.hasNext()){
+        System.out.println(iterator.next());
+    }
+
+    // java 线程简单运用
+        List<String> list=new ArrayList<>();
+        String s="s",s1="s1",s2="s2",s3="s3";
+        list.add(s);
+        list.add(s1);
+        list.add(s2);
+        list.add(s3);
+
+        // 创建线程
+        ExecutorService service = Executors.newFixedThreadPool(2);
+        Iterator<String> iterator = list.iterator();
+        while (iterator.hasNext()){
+            String next=iterator.next();
+            service.execute(new Runnable() {
+                // 线程执行的内容
+                @Override
+                public void run() {
+                    System.out.println("线程："+Thread.currentThread().getName()+",输出："+next);
+                }
+            });
+
+        }
+        // 完成之后关闭线程
+        service.shutdown();
