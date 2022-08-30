@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -27,6 +28,13 @@ public class PersonController {
 
     @Resource
     PersonService personService;
+
+    @GetMapping("/getAll")
+    @ApiOperation("查询所有人员")
+    public List<Person> getByAll(){
+
+        return personService.list();
+    }
 
     @GetMapping("/getById/{pId}")
     @ApiOperation("查询一个人员根据人员id")
@@ -45,7 +53,7 @@ public class PersonController {
         // ne("pName","小张") ---> name != '小张'
         qp.ne("pName","小张");
         // ge("pAge","20") ---> pAge > 20
-        qp.ge("pAge",20);
+        qp.ge("pAge",0);
         // like("pPhone","182") ---> pPhone like '%182%'
         qp.like("pPhone",person.getPPhone());
 

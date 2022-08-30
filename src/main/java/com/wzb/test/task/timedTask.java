@@ -1,4 +1,4 @@
-package com.wzb.test;
+package com.wzb.test.task;
 
 import com.wzb.entity.parent;
 import com.wzb.entity.subclass;
