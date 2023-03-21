@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface CronMapper {
 
-    @Select("select cron from test.cron limit 1")
+    @Select("select cron from test.cron where cron_id = 1 limit 1")
     String getCron();
 }

@@ -36,7 +36,7 @@ public class MyBatisPlusGenerator {
     //作者名
     private final static String author = "WangZhiBo";
     //指定生成的表名
-    private final static String[] tableNames = new String[]{"person"};
+    private final static String[] tableNames = new String[]{"cron"};
 
 
     public static void main(String[] args) {

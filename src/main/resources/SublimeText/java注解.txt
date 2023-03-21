@@ -1,0 +1,44 @@
+	java 比较经常用到的注解
+
+	@TableName(value = "表名")								//标识在实体类上，表示这个实体类对应数据库哪张表，与@TableId，@TableField一样都需要mybatisplus依赖
+    @TableField("字段名")									//标识在实体类属性上，对应数据库字段，与@TableId的不同在于一个是对应id，一个是对应其他列
+    @JsonProperty("JSON属性名")								//标识在实体类属性上，实体类属性和JSON传入名称不一致，通过该注解对应
+    @TableId(value = "ID列字段名", type = IdType.ASSIGN_ID)	//标识在实体类属性上，对应数据库字段，该注解 value表示该字段对应数据库字段id列，type = IdType.ASSIGN_ID 为id为自动生成uuid
+    @Param("") 												//标识mapper层的方法参数，作用就是给参数命名，可以是基本类型参数也可以是JavaBean对象
+    @NotNull(message = "XXX不能为Null")						//标识在实体类属性上，作用参数校验，该属性不能为null，
+    														  使用时需要在controller的方法上加上@Valid，还需要配置全局异常处理，相同的注解还有
+	@NotEmpty												//验证注解的元素值不为null且不为空（字符串长度不为0、集合大小不为0）
+	@NotBlank												//@NotBlank只应用于字符串且在比较时会去除字符串的空格	
+	@Email													//验证注解的元素值是Email
+	@Max(value)												//限制必须为一个不大于指定值的数字
+	@Min(value)												//限制必须为一个不小于指定值的数字	
+	@Size(max,min)											//限制字符长度必须在min到max之间
+	等等
+    @Valid													//标识在请求的参数体内，验证参数是否符合要求，如果失败就会返回@NotNull注解的message信息
+
+	@RestController											//标识在controller类上，该注解的作用等同于@Controller + @ResponseBody
+		@RestController										//表明了这个类是一个控制器类
+		@ResponseBody										//表示方法的返回值直接以指定的格式写入Http response body中，而不是解析为跳转路径
+	@RequestMapping("/tmp45gcm")							//@RequestMapping 可以用在类定义处和方法定义处。
+															    类定义处：规定初步的请求映射，相对于web应用的根目录；
+															    方法定义处：进一步细分请求映射，相对于类定义处的URL
+	@Resource												//标识在引用注入的属性上 @Resource和@Autowired注解都是用来实现依赖注入的。
+	@Autowired													只是@AutoWried按by  type自动注入，而@Resource默认按byName自动注入。
+	@Api(tags = "45G参数Controller")							//标识在controller类上，需要swagger依赖，在swagger页面显示时显示该注解的tags，而不是controller的名称
+	@ApiModel(description = "用户传入信息，保存对应表明和查询")//标识在实体类上，需要swagger依赖，在swagger页面显示时显示该注解的value,而不是实体类的名称
+    @ApiModelProperty(value = "nr频点")						//标识在实体类属性上，需要swagger依赖，在swagger页面显示时会显示该注解的value，而不是实体类属性
+    @ApiOperation(value = "用户登录"	)						//标识在控制器类的方法上，需要swagger依赖，在swagger页面显示时会显示该注解的value，表明方法的作用
+    @ApiImplicitParams 										//标识在请求的方法上，表示一组参数的说明
+    		大佬详细介绍 https://blog.csdn.net/jiangyu1013/article/details/83107255
+
+    @PostMapping											//标识在请求的方法上，表示该方法只允许post请求方式,同类型还有
+    @GetMapper
+    @DeleteMapper
+    @RequestBody											//标识在请求方法的参数体内，将接收到JSON数据，转换成JavaBean
+    @Service												//该注解标识于类上，标记当前类是一个service类，加上该注解会将当前类自动注入到spring容器中
+
+
+	@Data													//标识在实体类上，会自动生成实体类属性的get,set方法，需要lombok依赖
+	@NoArgsConstructor										//标识在实体类上，会自动生成实体类的无参构造方法，需要lombok依赖
+	@AllArgsConstructor										//标识在实体类上，会自动生成实体类的有参(全参)构造方法，需要lombok依赖
+	@Slf4j													//标识在类上，可以使用log.xxx()方法打印日志，需要lombok依赖

@@ -283,3 +283,41 @@ java Map循环
         }
         // 完成之后关闭线程
         service.shutdown();
+
+
+    public static void main(String[] args) {
+            PersonnelProcessLog p1 = new PersonnelProcessLog();
+            p1.setId(1l);
+            p1.setProcessName("XXX");
+
+            PersonnelProcessLog p2 = new PersonnelProcessLog();
+            p2.setId(2l);
+            p2.setProcessName("XXX");
+
+            List<PersonnelProcessLog> list = new ArrayList<>();
+            list.add(p1);
+            list.add(p2);
+
+            // list<实体>根据单值判断重复
+    //        long distinctNum = list.stream().map(PersonnelProcessLog::getProcessName).distinct().count();
+    //        if (distinctNum!=list.size()){
+    //            System.out.println("名称存在重复");
+    //        }
+
+            // list<实体>根据判断重复
+            List<PersonnelProcessLog> list2 =list.stream().distinct().collect(Collectors.toList());
+            if (list2.size()!=list.size()){
+                System.out.println("存在重复");
+            }else {
+                System.out.println("没有重复");
+            }
+
+            // list<实体>根据多个值判断重复
+    //        List<PersonnelProcessLog> distinctClass = list.stream()
+    //                .collect(Collectors.collectingAndThen(Collectors.toCollection(() ->
+    //                        new TreeSet<>(Comparator.comparing(o -> o.getPersonnelId() + ";" + o.getId()))),
+    //                        ArrayList::new));
+    //        if (distinctClass.size()!=list.size()){
+    //            System.out.println("存在重复");
+    //        }
+        }

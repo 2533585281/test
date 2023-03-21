@@ -730,3 +730,46 @@ layui.table获取数据时添加遮罩层	   https://blog.csdn.net/lanquankk/art
 		<button class="layui-btn layui-btn-xs " lay-event="assess" >性能评估</button> 
 		{{#  } }}
 	</script>	  
+
+
+
+		js 下载时显示遮罩，下载完成时取消遮罩的方法，url-请求路径
+			function downlod(url){
+			// 打开加载动画
+			const index = showLoading();
+			const xhr = new XMLHttpRequest();
+			xhr.open('GET', url);
+			xhr.send(null);
+			// 设置服务端的响应类型
+			xhr.responseType = "blob";
+			// 监听下载
+			xhr.addEventListener('progress', event => {
+				// 计算出百分比
+				const percent  = ((event.loaded / event.total) * 100).toFixed(2);
+				console.log(`下载进度：${percent}`);
+			}, false);
+			xhr.onreadystatechange = event => {
+				if(xhr.readyState == 4){
+					if (xhr.status == 200){
+						// 获取ContentType
+						const contentType = xhr.getResponseHeader('Content-Type');
+						// 文件名称
+						// const fileName = '参数核查.xlsx';
+						const fileName = '参数核查.csv';
+						// 创建一个a标签用于下载
+						const donwLoadLink = document.createElement('a');
+						donwLoadLink.download = fileName;
+						donwLoadLink.href = URL.createObjectURL(xhr.response);
+						// 触发下载事件，IO到磁盘
+						donwLoadLink.click();
+						// 释放内存中的资源
+						URL.revokeObjectURL(donwLoadLink.href);
+						// 关闭加载动画
+						layer.close(index);
+						layer.msg("当前仅支持导出20万数据。。。");
+					} else {
+						alert('系统异常');
+					}
+				}
+			}
+		}

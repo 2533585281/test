@@ -1,5 +1,6 @@
 package com.wzb.entity;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -44,6 +45,7 @@ public class Person implements Serializable {
      */
     @TableId(value = "pId",type = IdType.AUTO)
 //    @NotNull(message = "人员ID不能为空")
+    @ExcelProperty("人员ID")
     private Integer pId;
 
     /**
@@ -51,12 +53,14 @@ public class Person implements Serializable {
      */
     @TableField("pName")
     @NotNull(message = "人员名称不能为空")
+    @ExcelProperty("人员名称")
     private String pName;
 
     /**
      * 人员年龄
      */
     @TableField("pAge")
+    @ExcelProperty("人员年龄")
     @NotNull(message = "年龄不能为空")
     @Range(message = "年龄范围为 {min} 到 {max} 之间", min = 1, max = 100)
     private String pAge;
@@ -67,6 +71,7 @@ public class Person implements Serializable {
     @TableField("pPhone")
     @NotNull(message = "手机号码不能为空")
     @Pattern(regexp = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$",message = "手机号码不正确！")
+    @ExcelProperty("联系方式")
     private String pPhone;
 
 

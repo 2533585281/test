@@ -1,5 +1,6 @@
 package com.wzb.controller;
 
+import com.wzb.redisLock.test;
 import com.wzb.util.RedisUtils;
 import com.wzb.util.Response;
 import io.swagger.annotations.Api;
@@ -71,13 +72,23 @@ public class redisController {
     public Response deletevalue(@PathVariable("key")String key){
         boolean s=redisUtils.delete(key);
         if (s){
-            Response r=new Response();
-            r.setData("数据存入成功！");
-            return r;
+            return new Response(0,"true","数据操作成功！");
         }
         Response r=new Response();
         r.setData("数据存入失败！");
         return r;
+    }
+
+    /**
+     * 测试锁
+     * @return
+     */
+    @ResponseBody
+    @ApiOperation("测试锁")
+    @GetMapping("/testLock")
+    public Response testLock(){
+        test.testRedisLock();
+        return new Response(0,"true","数据操作成功！");
     }
 
 }

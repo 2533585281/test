@@ -29,6 +29,10 @@ import java.util.Objects;
 public class Aoplog {
     private static final String START_TIME = "request-start";
 
+    public Aoplog(){
+        log.info("Aoplog init");
+    }
+
     /**
      * 切入点
      */

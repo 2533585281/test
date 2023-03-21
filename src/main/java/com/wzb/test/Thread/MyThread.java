@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 
 /**
  * @Author Administrator
@@ -51,9 +51,9 @@ class SyncDemo02{
         }
         Iterator<String> iterator = list.iterator();
 
-//        ExecutorService service = new ThreadPoolExecutor(5, 5,
-//                                 1, TimeUnit.MINUTES, new ArrayBlockingQueue<>(list.size(), false),
-//                                Executors.defaultThreadFactory(), new ThreadPoolExecutor.AbortPolicy());
+        ExecutorService service = new ThreadPoolExecutor(5, 5,
+                                 1, TimeUnit.MINUTES, new ArrayBlockingQueue<>(list.size(), false),
+                                Executors.defaultThreadFactory(), new ThreadPoolExecutor.AbortPolicy());
 //        while (iterator.hasNext()){
 //            String next=iterator.next();
 //            service.execute(new Runnable() {

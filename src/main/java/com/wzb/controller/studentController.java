@@ -74,7 +74,7 @@ public class studentController {
     @ApiImplicitParam(name = "sid", value = "学生id", required = true, dataType = "String", paramType = "path")
     @ApiOperation("根据id查询学生")
     @GetMapping("/getBysid/{sid}")
-    public student getBysid(@PathVariable("sid") @NotNull(message = "用户id不能为空") String sid){
+    public student getBysid(@PathVariable("sid") @NotNull(message = "id不能为空") String sid){
         return studentService.getBysid(Integer.valueOf(sid));
     }
 

@@ -1,5 +1,5 @@
 https://blog.csdn.net/m0_67401920/article/details/124264401           IDEA配置tomcat运行web项目
-端口号被占用 win
+端口号被占用 windos
 
 netstat -ano|findstr 端口号
 taskkill /t /f /im 进程号

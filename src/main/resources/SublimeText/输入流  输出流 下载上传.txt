@@ -117,7 +117,7 @@
 
 
 
-    //输入输出流下载文件 另一种方法
+    //输入输出流下载文件 EasyExcel方法
         // js 
         var iframe = ('<iframe src="/tPerson/exportCW' +
         '" style="display: none"></iframe>');
@@ -146,6 +146,59 @@
         System.out.println("错误人员信息 导出 ");
         EasyExcel.write(response.getOutputStream(), TPerson.class).sheet("sheet1").doWrite((List<TPerson>)CwList);
         CwList.clear();
+    }
+
+
+        /**
+     * 结果导出  EasyExcel导出和hutoolCsvUtil导出
+     */
+    @ApiOperation(value = "从结果表导出数据", notes = "从结果表导出数据", produces = "application/json")
+    @RequestMapping(value = "resultExport", method = {RequestMethod.GET})
+//    @ResponseBody
+    public void resultExport(ParamCheckDto paramCheckDto, HttpServletResponse response) throws IOException {
+
+            long limit =  200000;
+            long page =  1;
+            paramCheckDto.setPage(page);
+            paramCheckDto.setLimit(limit);
+//          EasyExcel导出
+//        Long start = System.currentTimeMillis();
+//            List<List<ParamResultVo>> lists = new ArrayList<>();
+////            List<List<ParamResultVo>> list = queryResultExport(lists,paramCheckDto,page,limit);
+//            List<ParamResultVo> paramResultVos = paramCheckService.resultExport(paramCheckDto);
+//        Long end = System.currentTimeMillis();
+//        log.info("读取数据库耗时：{}", DateUtil.formatBetween(end - start));
+//            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+//            response.setCharacterEncoding("utf-8");
+//            // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+//            String fileName = URLEncoder.encode("paramCheck", "UTF-8").replaceAll("\\+", "%20");
+//            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".excel");
+////            for (int i = 0; i < list.size(); i++) {
+////                EasyExcel.write(response.getOutputStream(), ParamResultVo.class).sheet("模板"+i).doWrite(list.get(i));
+////            }
+//        EasyExcel.write(response.getOutputStream(), ParamResultVo.class).sheet("模板").doWrite(paramResultVos);
+//        Long end2 = System.currentTimeMillis();
+//        log.info("导出数据耗时：{}", DateUtil.formatBetween(end2 - end));
+
+//      hutoolCsvUtil导出
+        Long start = System.currentTimeMillis();
+        List<ParamResultVo> result = paramCheckService.resultExport(paramCheckDto);
+        Long end = System.currentTimeMillis();
+        log.info("读取数据库耗时：{}", DateUtil.formatBetween(end - start));
+        response.setCharacterEncoding("GBK");
+        response.setHeader("Content-Disposition", "attachment;filename=" + new String("paramCheck.csv".getBytes("UTF-8"), "ISO8859-1"));//ISO8859-1
+        response.setContentType("application/x-download;charset=gbk");
+        PrintWriter writer = response.getWriter();
+
+        CsvWriter csvWriter = CsvUtil.getWriter(writer);
+        //加上UTF-8文件的标识字符
+        csvWriter.writeBeans(result);
+        csvWriter.close();
+        writer.flush();
+        writer.close();
+        Long end2 = System.currentTimeMillis();
+        log.info("导出数据耗时：{}", DateUtil.formatBetween(end2 - end));
+
     }
 
 
